@@ -3,7 +3,6 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/hirotofuu/newsbyte/internal/models"
 )
@@ -27,8 +26,8 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 		article.Medium,
 		article.CommentOK,
 		article.UserID,
-		time.Now(),
-		time.Now(),
+		article.CreatedAt,
+		article.UpdatedAt,
 	).Scan(&newID)
 	if err != nil {
 		return 0, err
@@ -219,7 +218,6 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 
 	return &article, nil
 }
-
 
 func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)

@@ -10,7 +10,7 @@ type Article struct {
 	Content   string    `json:"content"`
 	Title     string    `json:"title"`
 	Work      string    `json:"work"`
-	MainImg   string    `json:"main_img"`
+	MainImg   string    `json:"main_img,omitempty"`
 	Medium    int       `json:"medium"`
 	UserID    int       `json:"user_id"`
 	CommentOK bool      `json:"comment_ok"`
