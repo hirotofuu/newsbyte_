@@ -9,3 +9,19 @@ type Databaserepo interface {
 	InsertUser(user models.User) (int, error)
 	AllUsers() ([]*models.User, error)
 }
+
+type ArticleDatabaserepo interface {
+	InsertArticle(article models.Article) (int, error)
+	AllArticles() ([]*models.Article, error)
+	UserArticles(userID int) ([]*models.Article, error)
+	WorkArticles(work string) ([]*models.Article, error)
+	OneArticle(id int) (*models.Article, error)
+	DeleteArticle(id int) error
+}
+
+type CommentDatabaserepo interface {
+	InsertComment(comment models.Comment) (int, error)
+	ArticleComments(articleID int) ([]*models.Comment, error)
+	UserComments(userID int) ([]*models.Comment, error)
+	DeleteComment(id int) error
+}
