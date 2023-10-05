@@ -66,7 +66,7 @@ func (app *application) GetOneArticle(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
+func (app *application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	var article models.Article
 
 	err := app.readJSON(w, r, &article)
@@ -89,7 +89,7 @@ func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 		Message: "article is inserted",
 	}
 
-	app.writeJSON(w, http.StatusAccepted, resp)
+	app.writeJSON(w, http.StatusOK, resp)
 }
 
 func (app *application) DeleteArticle(w http.ResponseWriter, r *http.Request) {

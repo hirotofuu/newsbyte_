@@ -15,6 +15,7 @@ type application struct {
 	DSN          string
 	DB           repository.Databaserepo
 	ADB          repository.ArticleDatabaserepo
+	CDB          repository.CommentDatabaserepo
 	Domain       string
 	auth         Auth
 	JWTSecret    string
@@ -45,6 +46,7 @@ func main() {
 	}
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	app.ADB = &dbrepo.ArticlePostgresDBRepo{DB: conn}
+	app.CDB = &dbrepo.CommentPostgresDBRepo{DB: conn}
 	defer conn.Close()
 
 	app.auth = Auth{

@@ -21,18 +21,42 @@ func Test_app_articleHandlers(t *testing.T) {
 		expectedStatus int
 	}{
 		{"allArticles", "GET", "", "", "", app.GetAllArticles, http.StatusOK},
+
 		// fetch one test
 		{"oneArticle", "GET", "", "id", "1", app.GetOneArticle, http.StatusOK},
 		{"oneArticle invalid", "GET", "", "id", "100", app.GetOneArticle, http.StatusBadRequest},
 		{"oneArticle bad URL param", "GET", "", "id", "Y", app.GetOneArticle, http.StatusBadRequest},
+
 		// fetch user's test
 		{"userArticle", "GET", "", "user_id", "1", app.GetUserArticles, http.StatusOK},
+
 		// fetch work test
 		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, http.StatusOK},
+
 		// delete test
 		{"deleteArticle", "DELETE", "", "id", "1", app.DeleteArticle, http.StatusOK},
 		{"deleteArticle invalid", "DELETE", "", "id", "9", app.DeleteArticle, http.StatusBadRequest},
 		{"deleteArticle  bad URL param", "DELETE", "", "id", "Y", app.DeleteArticle, http.StatusBadRequest},
+
+		// insert article test
+		{
+			"insertArticle valid",
+			"PUT",
+			`{"title":"a","content":"it's great.","work":"jujukaisen","medium":1,"comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
+			"",
+			"",
+			app.InsertArticle,
+			http.StatusOK,
+		},
+		{
+			"insertArticle invalid input",
+			"PUT",
+			`{"title":2,"content":"it's great.","work":"jujukaisen","medium":"1","comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
+			"",
+			"",
+			app.InsertArticle,
+			http.StatusBadRequest,
+		},
 	}
 
 	for _, e := range tests {
