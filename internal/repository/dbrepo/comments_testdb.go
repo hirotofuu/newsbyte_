@@ -8,24 +8,32 @@ import (
 
 type TestCDBRepo struct{}
 
-func (m *TestDBRepo) InsertComment(comment models.Comment) (int, error) {
+func (m *TestCDBRepo) InsertComment(comment models.Comment) (int, error) {
 
 	return 1, nil
 }
 
-func (m *TestDBRepo) ArticleComments(articleID int) ([]*models.Comment, error) {
-	var comments []*models.Comment
+func (m *TestCDBRepo) ArticleComments(articleID int) ([]*models.Comment, error) {
 
-	return comments, nil
+	if (articleID == 1) {
+		var comments []*models.Comment
+	
+		return comments, nil
+	}
+	return nil, errors.New("not found article")
 }
 
-func (m *TestDBRepo) UserComments(userID int) ([]*models.Comment, error) {
-	var comments []*models.Comment
+func (m *TestCDBRepo) UserComments(userID int) ([]*models.Comment, error) {
 
-	return comments, nil
+	if (userID == 1) {
+		var comments []*models.Comment
+	
+		return comments, nil
+	}
+	return nil, errors.New("not found article")
 }
 
-func (m *TestDBRepo) DeleteComment(id int) error {
+func (m *TestCDBRepo) DeleteComment(id int) error {
 
 	if id == 1 {
 		return nil
