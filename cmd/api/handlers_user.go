@@ -50,10 +50,13 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user.Token = tokens.Token
+	user.RefreshToken = tokens.RefreshToken
+
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
 
-	app.writeJSON(w, http.StatusOK, tokens)
+	app.writeJSON(w, http.StatusOK, user)
 }
 
 // ユーザー登録
@@ -90,16 +93,29 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 	user.Profile = ""
 	user.AvatarImg = "http://s3/0315"
 
-	_, err = app.DB.InsertUser(user)
+	ID, err := app.DB.InsertUser(user)
 	if err != nil {
 		app.errorJSON(w, err, http.StatusBadRequest)
 		return
 	}
 
-	resp := JSONResponse{
-		Error:   false,
-		Message: "register succeed",
+	u := jwtUser{
+		ID:       ID,
+		UserName: user.UserName,
 	}
 
-	app.writeJSON(w, http.StatusAccepted, resp)
+	tokens, err := app.auth.CreateTokenPair(&u)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	user.ID = ID
+	user.Token = tokens.Token
+	user.RefreshToken = tokens.RefreshToken
+
+	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
+	http.SetCookie(w, refreshCookie)
+
+	app.writeJSON(w, http.StatusAccepted, user)
 }

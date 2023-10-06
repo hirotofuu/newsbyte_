@@ -82,3 +82,53 @@ func Test_app_articleHandlers(t *testing.T) {
 		}
 	}
 }
+
+func Test_app_commentHandlers(t *testing.T) {
+	var tests = []struct {
+		name           string
+		method         string
+		json           string
+		paramName      string
+		paramID        string
+		handler        http.HandlerFunc
+		expectedStatus int
+	}{
+		// fetch user's test
+		{"userComment", "GET", "", "user_id", "1", app.GetUserComments, http.StatusOK},
+		{"userComment invalid user_id", "GET", "", "user_id", "3", app.GetUserComments, http.StatusBadRequest},
+		{"userComment invalid paramsName", "GET", "", "user_ide", "3", app.GetUserComments, http.StatusBadRequest},
+		
+		//fetch article's test
+		{"userComment", "GET", "", "article_id", "1", app.GetArticleComments, http.StatusOK},
+		{"articleComment invalid article_id", "GET", "", "article_id", "2", app.GetArticleComments, http.StatusBadRequest},
+		{"userComment invalid paramsName", "GET", "", "article_ide", "1", app.GetArticleComments, http.StatusBadRequest},
+
+		// delete comment
+		{"userComment", "DELETE", "", "id", "1", app.DeleteComment, http.StatusOK},
+		{"deleteComment invalid id", "DELETE", "", "id", "2", app.DeleteComment, http.StatusBadRequest},
+		{"deleteComment invalid paramName", "DELETE", "", "ide", "2", app.DeleteComment, http.StatusBadRequest},
+	}
+
+	for _, e := range tests {
+		var req *http.Request
+		if e.json == "" {
+			req, _ = http.NewRequest(e.method, "/", nil)
+		} else {
+			req, _ = http.NewRequest(e.method, "/", strings.NewReader(e.json))
+		}
+
+		if e.paramName != "" {
+			chiCtx := chi.NewRouteContext()
+			chiCtx.URLParams.Add(e.paramName, e.paramID)
+			req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, chiCtx))
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(e.handler)
+		handler.ServeHTTP(rr, req)
+
+		if rr.Code != e.expectedStatus {
+			t.Errorf("%s: wrong status returned; expected %d but got %d", e.name, e.expectedStatus, rr.Code)
+		}
+	}
+}

@@ -9,14 +9,16 @@ import (
 
 // User describes the data for the User type.
 type User struct {
-	ID        int       `json:"id"`
-	UserName  string    `json:"user_name"`
-	Email     string    `json:"email"`
-	AvatarImg string    `json:"avatar_img"`
-	Profile   string    `json:"profile"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
+	ID           int       `json:"id"`
+	UserName     string    `json:"user_name"`
+	Email        string    `json:"email"`
+	AvatarImg    string    `json:"avatar_img"`
+	Profile      string    `json:"profile"`
+	Password     string    `json:"-"`
+	Token        string    `json:"token,omitempty"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
 }
 
 // PasswordMatches uses Go's bcrypt package to compare a user supplied password
