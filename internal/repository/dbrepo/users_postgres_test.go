@@ -154,3 +154,4 @@ func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
 		t.Errorf("expect jack but got %v", users.UserName)
 	}
 }
+

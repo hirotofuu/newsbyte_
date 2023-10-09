@@ -169,7 +169,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("insert comment reports wrong id; expected 1, but got %d", commentID)
 	}
 
-	comments, err := testCommentRepo.ArticleComments(articleID)
+	comments, err := testCommentRepo.ArticleComments(articleID, userID)
 	if err != nil {
 		t.Errorf("article comments reports an error: %s", err)
 	}
@@ -178,7 +178,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("article comment reports wrong size; expected 1, but got %d", len(comments))
 	}
 
-	comments, err = testCommentRepo.UserComments(userID)
+	comments, err = testCommentRepo.UserComments(userID, userID)
 	if err != nil {
 		t.Errorf("user comments reports an error: %s", err)
 	}
@@ -187,12 +187,35 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("article comment reports wrong size; expected 1, but got %d", len(comments))
 	}
 
+	err = testCommentRepo.InsertGoodComment(commentID, userID)
+	if err != nil {
+		t.Errorf("insert good comment reports an error: %s", err)
+	}
+
+	come, err := testCommentRepo.OneComment(commentID, userID)
+	if err != nil {
+		t.Errorf("one comments reports an error: %s", err)
+	}
+	if come.IsGoodFlag != 1 {
+		t.Errorf("one comment reports wrong value; expected 0, but got %d", come.IsGoodFlag)
+	}
+
+	err = testCommentRepo.DeleteGoodComment(commentID, userID)
+	if err != nil {
+		t.Errorf("delete good comment reports an error: %s", err)
+	}
+
+	come, err = testCommentRepo.OneComment(commentID, userID)
+	if come.IsGoodFlag != 0 {
+		t.Errorf("one comment reports wrong value; expected 0, but got %d", come.IsGoodFlag)
+	}
+
 	err = testCommentRepo.DeleteComment(commentID)
 	if err != nil {
 		t.Errorf("delete comment reports an error: %s", err)
 	}
 
-	comments, err = testCommentRepo.ArticleComments(articleID)
+	comments, err = testCommentRepo.ArticleComments(articleID, userID)
 	if err != nil {
 		t.Errorf("article comments reports an error: %s", err)
 	}

@@ -17,7 +17,7 @@ func (app *application) GetArticleComments(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	comments, err := app.CDB.ArticleComments(articleID)
+	comments, err := app.CDB.ArticleComments(articleID, 1)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -34,7 +34,7 @@ func (app *application) GetUserComments(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	comments, err := app.CDB.UserComments(userID)
+	comments, err := app.CDB.UserComments(userID, 1)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

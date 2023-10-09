@@ -21,7 +21,10 @@ type ArticleDatabaserepo interface {
 
 type CommentDatabaserepo interface {
 	InsertComment(comment models.Comment) (int, error)
-	ArticleComments(articleID int) ([]*models.Comment, error)
-	UserComments(userID int) ([]*models.Comment, error)
+	ArticleComments(articleID, mainID int) ([]*models.Comment, error)
+	UserComments(userID, mainID int) ([]*models.Comment, error)
+	OneComment(id, mainID int) (*models.Comment, error)
 	DeleteComment(id int) error
+	InsertGoodComment(id, mainID int) error
+	DeleteGoodComment(commentID, mainID int) error
 }
