@@ -16,6 +16,8 @@ type Article struct {
 	CommentOK bool      `json:"comment_ok"`
 	Name      string    `json:"name,omitempty"`
 	Avatar    string    `json:"avatar,omitempty"`
+	GoodsCount   int       `json:"good_count,omitempty"`
+	IsGoodFlag int       `json:"is_good_flag,omitempty"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 }

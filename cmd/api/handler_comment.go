@@ -89,3 +89,43 @@ func (app *application) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, resp)
 
 }
+
+func (app *application) InsertGoodComment(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.CDB.InsertGoodComment(id, 1)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "comment good",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) DeleteGoodComment(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.CDB.DeleteGoodComment(id, 1)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "delete comment good",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}

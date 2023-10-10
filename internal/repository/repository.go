@@ -6,6 +6,7 @@ import (
 
 type Databaserepo interface {
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByID(id int) (*models.User, error)
 	InsertUser(user models.User) (int, error)
 	AllUsers() ([]*models.User, error)
 }
@@ -15,8 +16,10 @@ type ArticleDatabaserepo interface {
 	AllArticles() ([]*models.Article, error)
 	UserArticles(userID int) ([]*models.Article, error)
 	WorkArticles(work string) ([]*models.Article, error)
-	OneArticle(id int) (*models.Article, error)
+	OneArticle(id, mainID int) (*models.Article, error)
 	DeleteArticle(id int) error
+	InsertGoodArticle(id, mainID int) error
+	DeleteGoodArticle(articleID, mainID int) error
 }
 
 type CommentDatabaserepo interface {

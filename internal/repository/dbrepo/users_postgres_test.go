@@ -140,6 +140,15 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 	if newID != 1 {
 		t.Errorf("all users reports wrong size; expected 2, but got %d", len(users))
 	}
+
+	user, err := testRepo.GetUserByID(newID)
+	if err != nil {
+		t.Errorf("getuserbyid reports an error: %s", err)
+	}
+
+	if user.UserName != "Jack" {
+		t.Errorf("expect jack but got %v", user.UserName)
+	}
 }
 
 func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
@@ -147,7 +156,7 @@ func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
 
 	users, err := testRepo.GetUserByEmail(testEmail)
 	if err != nil {
-		t.Errorf("getuserbyid reports an error: %s", err)
+		t.Errorf("getuserbyemail reports an error: %s", err)
 	}
 
 	if users.UserName != "Jack" {

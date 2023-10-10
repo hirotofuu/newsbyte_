@@ -57,6 +57,13 @@ func Test_app_articleHandlers(t *testing.T) {
 			app.InsertArticle,
 			http.StatusBadRequest,
 		},
+
+		{"insertGoodArticle valid", "PUT", "", "id", "1", app.InsertGoodArticle, http.StatusOK},
+		{"insertGoodArticle invalid params", "PUT", "", "id", "2", app.InsertGoodArticle, http.StatusBadRequest},
+		{"insertGoodArticle invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodArticle, http.StatusBadRequest},
+		{"deleteGoodArticle valid", "PUT", "", "id", "1", app.DeleteGoodArticle, http.StatusOK},
+		{"deleteGoodArticle invalid params", "DELETE", "", "id", "2", app.DeleteGoodArticle, http.StatusBadRequest},
+		{"deleteGoodArticle invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodArticle, http.StatusBadRequest},
 	}
 
 	for _, e := range tests {
@@ -107,6 +114,14 @@ func Test_app_commentHandlers(t *testing.T) {
 		{"userComment", "DELETE", "", "id", "1", app.DeleteComment, http.StatusOK},
 		{"deleteComment invalid id", "DELETE", "", "id", "2", app.DeleteComment, http.StatusBadRequest},
 		{"deleteComment invalid paramName", "DELETE", "", "ide", "2", app.DeleteComment, http.StatusBadRequest},
+
+		// good
+		{"insertGoodComment valid", "PUT", "", "id", "1", app.InsertGoodComment, http.StatusOK},
+		{"insertGoodComment invalid params", "PUT", "", "id", "2", app.InsertGoodComment, http.StatusBadRequest},
+		{"insertGoodComment invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodComment, http.StatusBadRequest},
+		{"deleteGoodComment valid", "DELETE", "", "id", "1", app.DeleteGoodComment, http.StatusOK},
+		{"deleteGoodComment invalid params", "DELETE", "", "id", "2", app.DeleteGoodComment, http.StatusBadRequest},
+		{"deleteGoodComment invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodComment, http.StatusBadRequest},
 	}
 
 	for _, e := range tests {

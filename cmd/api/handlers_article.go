@@ -56,7 +56,7 @@ func (app *application) GetOneArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	article, err := app.ADB.OneArticle(articleID)
+	article, err := app.ADB.OneArticle(articleID, 1)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -111,4 +111,44 @@ func (app *application) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, resp)
 
+}
+
+func (app *application) InsertGoodArticle(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.ADB.InsertGoodArticle(id, 1)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "article good",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) DeleteGoodArticle(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.ADB.DeleteGoodArticle(id, 1)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "delete article good",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
 }

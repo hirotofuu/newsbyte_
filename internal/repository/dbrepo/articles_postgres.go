@@ -180,22 +180,42 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 	return articles, nil
 }
 
-func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
+func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
-		u.user_name, u.avatar_img
+		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at, u.user_name, u.avatar_img, coalesce(is_good_flag, 0), coalesce(g.goods_count, 0)
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
+
+		left join
+			(select article_id,
+				(case
+					when u.id = $2 then 1
+					else 0	
+				end) is_good_flag
+			from article_goods n
+			left join
+				users u on (u.id = n.user_id)
+			group by article_id, u.id
+			) m	
+		on (a.id = m.article_id)
+
+    left join
+      (select count(*) as goods_count, article_id
+      from
+       article_goods
+      group by article_id)  g 
+    on (g.article_id = a.id)
 		where 
 		    a.id = $1`
 
+
 	var article models.Article
-	row := m.DB.QueryRowContext(ctx, query, id)
+	row := m.DB.QueryRowContext(ctx, query, id, mainID)
 
 	err := row.Scan(
 		&article.ID,
@@ -210,6 +230,8 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 		&article.UpdatedAt,
 		&article.Name,
 		&article.Avatar,
+		&article.IsGoodFlag,
+		&article.GoodsCount,
 	)
 
 	if err != nil {
@@ -230,4 +252,36 @@ func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	}
 
 	return nil
+}
+
+func (m *ArticlePostgresDBRepo) InsertGoodArticle(id, mainID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `insert into article_goods (article_id, user_id) values ($1, $2) returning id`
+	var newID int
+
+	err := m.DB.QueryRowContext(ctx, stmt, id, mainID).Scan(&newID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (m *ArticlePostgresDBRepo) DeleteGoodArticle(articleID, mainID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `delete from article_goods where article_id = $1 and user_id = $2`
+
+
+	_,  err := m.DB.ExecContext(ctx, stmt, articleID, mainID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

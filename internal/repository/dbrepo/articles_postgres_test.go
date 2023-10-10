@@ -211,13 +211,30 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 
 func TestArticlePostgresDBRepoGetOneArticle(t *testing.T) {
 
-	article, err := testArticleRepo.OneArticle(1)
+	article, err := testArticleRepo.OneArticle(1, 1)
 	if err != nil {
 		t.Errorf("all users reports an error: %s", err)
 	}
 
 	if article.Title != "you know say" {
 		t.Errorf("all users reports wrong size; expected 2, but got %s", "Jack")
+	}
+
+	err = testArticleRepo.InsertGoodArticle(article.ID, 1)
+	if err != nil {
+		t.Errorf("insert good article reports an error: %s", err)
+	}
+	article, err = testArticleRepo.OneArticle(1, 1)
+	if article.IsGoodFlag != 1 {
+		t.Errorf("one article reports wrong value; expected 0, but got %d", article.IsGoodFlag)
+	}
+	err = testArticleRepo.DeleteGoodArticle(article.ID, 1)
+	if err != nil {
+		t.Errorf("delete good article reports an error: %s", err)
+	}
+	article, err = testArticleRepo.OneArticle(1, 1)
+	if article.IsGoodFlag != 0 {
+		t.Errorf("one article reports wrong value; expected 0, but got %d", article.IsGoodFlag)
 	}
 
 	err = testArticleRepo.DeleteArticle(1)

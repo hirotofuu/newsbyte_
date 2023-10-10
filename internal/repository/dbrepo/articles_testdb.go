@@ -34,13 +34,13 @@ func (m *TestADBRepo) WorkArticles(work string) ([]*models.Article, error) {
 
 func (m *TestADBRepo) DeleteArticle(id int) error {
 
-	if id == 1{	
-			return nil
+	if id == 1 {
+		return nil
 	}
 	return errors.New("not found article")
 }
 
-func (m *TestADBRepo) OneArticle(id int) (*models.Article, error) {
+func (m *TestADBRepo) OneArticle(id, mainID int) (*models.Article, error) {
 	var testArticle models.Article
 
 	testArticle.ID = id
@@ -54,11 +54,27 @@ func (m *TestADBRepo) OneArticle(id int) (*models.Article, error) {
 	testArticle.UpdatedAt = time.Now()
 	testArticle.Name = "hiroto"
 	testArticle.Avatar = "http://hello"
+	testArticle.IsGoodFlag = 1
+	testArticle.GoodsCount = 0
 
-	if id == 1{
-			return &testArticle, nil
+	if id == 1 {
+		return &testArticle, nil
 	}
 
-	return nil,  errors.New("not found article")
+	return nil, errors.New("not found article")
 
+}
+
+func (m *TestADBRepo) InsertGoodArticle(id, mainID int) error {
+	if (id == 1) {
+		return nil
+	}
+	return errors.New("not found article")
+}
+
+func (m *TestADBRepo) DeleteGoodArticle(articleID, mainID int) error {
+	if (articleID == 1) {
+		return nil
+	}
+	return errors.New("not found article")
 }
