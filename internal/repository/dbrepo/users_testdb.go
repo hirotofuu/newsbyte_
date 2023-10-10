@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/hirotofuu/newsbyte/internal/models"
@@ -57,4 +58,18 @@ func (m *TestDBRepo) AllUsers() ([]*models.User, error) {
 	var users []*models.User
 
 	return users, nil
+}
+
+func (m *TestDBRepo) InsertFollow(id, mainID int) error {
+	if id == 1 {
+		return nil
+	}
+	return errors.New("not found user")
+}
+
+func (m *TestDBRepo) DeleteFollow(id, mainID int) error {
+	if id == 1 {
+		return nil
+	}
+	return errors.New("not found user")
 }

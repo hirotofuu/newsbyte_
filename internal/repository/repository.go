@@ -9,6 +9,8 @@ type Databaserepo interface {
 	GetUserByID(id int) (*models.User, error)
 	InsertUser(user models.User) (int, error)
 	AllUsers() ([]*models.User, error)
+	InsertFollow(id, mainID int) error
+	DeleteFollow(id, mainID int) error
 }
 
 type ArticleDatabaserepo interface {

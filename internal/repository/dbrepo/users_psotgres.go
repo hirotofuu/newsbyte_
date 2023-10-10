@@ -139,3 +139,36 @@ func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 
 	return newID, nil
 }
+
+func (m *PostgresDBRepo) InsertFollow(id, mainID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `insert into follows (followed_id, following_id) values ($1, $2) returning id`
+	var newID int
+
+	err := m.DB.QueryRowContext(ctx, stmt, id, mainID).Scan(&newID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (m *PostgresDBRepo) DeleteFollow(id, mainID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `delete from follows where followed_id = $1 and following_id = $2`
+
+	_, err := m.DB.ExecContext(ctx, stmt, id, mainID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+

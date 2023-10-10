@@ -132,6 +132,20 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 		t.Errorf("insert user reports an error: %s", err)
 	}
 
+	testUser = models.User{
+		UserName:  "hiroto",
+		Email:     "hiroto@smith.com",
+		Password:  "secret",
+		AvatarImg: "http:/clap",
+		Profile:   "",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	secondID, err := testRepo.InsertUser(testUser)
+	if err != nil {
+		t.Errorf("insert user reports an error: %s", err)
+	}
+
 	users, err = testRepo.AllUsers()
 	if err != nil {
 		t.Errorf("all users reports an error: %s", err)
@@ -149,6 +163,16 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 	if user.UserName != "Jack" {
 		t.Errorf("expect jack but got %v", user.UserName)
 	}
+
+	err = testRepo.InsertFollow(newID, secondID)
+	if err != nil {
+		t.Errorf("insert good comment reports an error: %s", err)
+	}
+
+	err = testRepo.DeleteFollow(newID, secondID)
+	if err != nil {
+		t.Errorf("delete good comment reports an error: %s", err)
+	}
 }
 
 func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
@@ -163,4 +187,5 @@ func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
 		t.Errorf("expect jack but got %v", users.UserName)
 	}
 }
+
 

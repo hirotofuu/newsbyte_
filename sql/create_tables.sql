@@ -29,6 +29,10 @@ CREATE TABLE public.articles (
   id integer NOT NULL,
   content text,
   title character varying(512),
+  main_img character varying(512),
+  work character varying(255),
+  medium integer,
+  comment_ok boolean,
   created_at timestamp without time zone,
   updated_at timestamp without time zone,
   user_id integer 
@@ -124,6 +128,22 @@ ALTER TABLE public.comment_goods ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTIT
     CACHE 1
 );
 
+CREATE TABLE public.follows (
+  id integer NOT NULL,
+  following_id integer,
+  followed_id integer
+);
+
+
+ALTER TABLE public.follows ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.follows_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
@@ -141,6 +161,9 @@ ALTER TABLE ONLY public.article_goods
 
 ALTER TABLE ONLY public.comment_goods
     ADD CONSTRAINT comment_goods_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.follows
+    ADD CONSTRAINT follows_pkey PRIMARY KEY (id);
 
 
 ALTER TABLE ONLY public.articles
@@ -164,11 +187,10 @@ ALTER TABLE ONLY public.comment_goods
 ALTER TABLE ONLY public.comment_goods
     ADD CONSTRAINT comment_goods_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES public.comments(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
-
-
-ALTER TABLE articles ADD COLUMN comment_ok boolean;
-ALTER TABLE articles ADD COLUMN work character varying(255); 
-
+ALTER TABLE ONLY public.follows
+    ADD CONSTRAINT follows_following_id_fkey FOREIGN KEY (following_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.follows
+    ADD CONSTRAINT follows_followed_id_fkey FOREIGN KEY (followed_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 
