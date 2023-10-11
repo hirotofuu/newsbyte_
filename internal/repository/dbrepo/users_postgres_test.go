@@ -169,6 +169,41 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 		t.Errorf("insert good comment reports an error: %s", err)
 	}
 
+	num, err := testRepo.GetFollowingUserIDs(newID)
+	if err != nil {
+		t.Errorf("get followings reports an error: %s", err)
+	}
+	if len(num) != 0 {
+		t.Errorf("fet following reports wrong size; expected 2, but got %d", len(num))
+	}
+
+	user, err = testRepo.OneUser(newID)
+	if err != nil {
+		t.Errorf("get followings reports an error: %s", err)
+	}
+	if user.FollowingsCount != 0 {
+		t.Errorf("one user reports wrong following num; expected 0, but got %d", user.FollowingsCount)
+	}
+	if user.FollowedsCount != 1 {
+		t.Errorf("one user reports wrong followed num; expected 0, but got %d", user.FollowingsCount)
+	}
+
+	fUsers, err := testRepo.FollowingUsers(secondID)
+	if err != nil {
+		t.Errorf("following reports an error: %s", err)
+	}
+	if len(fUsers) != 1 {
+		t.Errorf("expect 1 but got %v", len(fUsers))
+	}
+
+	fUsers, err = testRepo.FollowedUsers(newID)
+	if err != nil {
+		t.Errorf("followed reports an error: %s", err)
+	}
+	if len(fUsers) != 1 {
+		t.Errorf("expect 1 but got %v", len(fUsers))
+	}
+
 	err = testRepo.DeleteFollow(newID, secondID)
 	if err != nil {
 		t.Errorf("delete good comment reports an error: %s", err)
@@ -182,10 +217,8 @@ func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
 	if err != nil {
 		t.Errorf("getuserbyemail reports an error: %s", err)
 	}
-
 	if users.UserName != "Jack" {
 		t.Errorf("expect jack but got %v", users.UserName)
 	}
+
 }
-
-

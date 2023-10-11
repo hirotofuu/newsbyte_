@@ -11,6 +11,10 @@ type Databaserepo interface {
 	AllUsers() ([]*models.User, error)
 	InsertFollow(id, mainID int) error
 	DeleteFollow(id, mainID int) error
+	GetFollowingUserIDs(mainID int) ([]*int, error)
+	OneUser(id int) (*models.User, error)
+	FollowingUsers(id int) ([]*models.User, error)
+	FollowedUsers(id int) ([]*models.User, error)
 }
 
 type ArticleDatabaserepo interface {

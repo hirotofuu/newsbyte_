@@ -73,3 +73,45 @@ func (m *TestDBRepo) DeleteFollow(id, mainID int) error {
 	}
 	return errors.New("not found user")
 }
+
+func (m *TestDBRepo) GetFollowingUserIDs(mainID int) ([]*int, error) {
+	var id int
+	id = 3
+	if mainID == 1 {
+		var ids []*int
+		ids = append(ids, &id)
+		return ids, nil
+	}
+	return nil, errors.New("not found user")
+}
+
+func (m *TestDBRepo) OneUser(id int) (*models.User, error) {
+	if id == 1 {
+		user := models.User{
+			ID:              1,
+			UserName:        "hiroto",
+			Email:           "admin@example.com",
+			Password:        "$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK",
+			Profile:         "",
+			AvatarImg:       "http:/s3/s",
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+			FollowingsCount: 12,
+		}
+		return &user, nil
+	}
+
+	return nil, sql.ErrNoRows
+}
+
+func (m *TestDBRepo) FollowingUsers(id int) ([]*models.User, error) {
+	var users []*models.User
+
+	return users, nil
+}
+
+func (m *TestDBRepo) FollowedUsers(id int) ([]*models.User, error) {
+	var users []*models.User
+
+	return users, nil
+}

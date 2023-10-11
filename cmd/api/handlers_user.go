@@ -53,8 +53,15 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	folloingIDs, err := app.DB.GetFollowingUserIDs(user.ID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
 	user.Token = tokens.Token
 	user.RefreshToken = tokens.RefreshToken
+	user.FollowingUserIDs = folloingIDs
 
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
@@ -95,6 +102,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 	user.UpdatedAt = time.Now()
 	user.Profile = ""
 	user.AvatarImg = "http://s3/0315"
+	user.FollowingUserIDs = []*int{}
 
 	ID, err := app.DB.InsertUser(user)
 	if err != nil {
@@ -165,6 +173,14 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 
 			user.Token = tokens.Token
 			user.RefreshToken = tokens.RefreshToken
+
+			folloingIDs, err := app.DB.GetFollowingUserIDs(user.ID)
+			if err != nil {
+				app.errorJSON(w, err)
+				return
+			}
+
+			user.FollowingUserIDs = folloingIDs
 
 			refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 			http.SetCookie(w, refreshCookie)

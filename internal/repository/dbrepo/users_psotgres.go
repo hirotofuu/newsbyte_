@@ -20,7 +20,7 @@ func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, user_name, password, avatar_img, profile,
+	query := `select id, email, user_name, avatar_img, profile,
 	created_at, updated_at
 	from users `
 
@@ -38,7 +38,6 @@ func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 			&user.ID,
 			&user.Email,
 			&user.UserName,
-			&user.Password,
 			&user.AvatarImg,
 			&user.Profile,
 			&user.CreatedAt,
@@ -171,4 +170,195 @@ func (m *PostgresDBRepo) DeleteFollow(id, mainID int) error {
 
 }
 
+func (m *PostgresDBRepo) GetFollowingUserIDs(mainID int) ([]*int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `select followed_id from follows f where f.following_id = $1`
 
+	rows, err := m.DB.QueryContext(ctx, query, mainID)
+	if err != nil {
+		return nil, err
+	}
+
+	var followingUserIDs []*int
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+
+		followingUserIDs = append(followingUserIDs, &id)
+	}
+
+	return followingUserIDs, nil
+
+}
+
+func (m *PostgresDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select id, email, user_name, avatar_img, profile,
+	created_at, updated_at
+	from users where user_name = $1`
+
+	rows, err := m.DB.QueryContext(ctx, query, keyWord)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*models.User
+
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(
+			&user.ID,
+			&user.Email,
+			&user.UserName,
+			&user.AvatarImg,
+			&user.Profile,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+		if err != nil {
+			log.Println("Error scanning", err)
+			return nil, err
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
+func (m *PostgresDBRepo) OneUser(id int) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+	select
+			u.id, u.email, u.user_name, u.password, u.avatar_img, u.profile,
+			u.created_at, u.updated_at, coalesce(ing.followings_count, 0), coalesce(ed.followeds_count, 0)
+	from users u
+	left join
+		(select count(*)  followings_count, following_id
+		from
+			follows
+		group by following_id)  ing 
+	on (ing.following_id = u.id)
+
+	left join
+		(select count(*)  followeds_count, followed_id
+		from
+			follows
+		group by followed_id)  ed 
+	on (ed.followed_id = u.id)
+
+	where id = $1`
+
+	var user models.User
+	row := m.DB.QueryRowContext(ctx, query, id)
+
+	err := row.Scan(
+		&user.ID,
+		&user.Email,
+		&user.UserName,
+		&user.Password,
+		&user.AvatarImg,
+		&user.Profile,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.FollowingsCount,
+		&user.FollowedsCount,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (m *PostgresDBRepo) FollowingUsers(id int) ([]*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select u.id, u.email, u.user_name, u.avatar_img, u.profile,
+	u.created_at, u.updated_at
+	from follows f
+	left join users u on (f.followed_id= u.id)
+	where f.following_id = $1
+	`
+
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*models.User
+
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(
+			&user.ID,
+			&user.Email,
+			&user.UserName,
+			&user.AvatarImg,
+			&user.Profile,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+		if err != nil {
+			log.Println("Error scanning", err)
+			return nil, err
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
+func (m *PostgresDBRepo) FollowedUsers(id int) ([]*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select u.id, u.email, u.user_name, u.avatar_img, u.profile,
+	u.created_at, u.updated_at
+	from follows f
+	left join users u on (f.following_id= u.id)
+	where f.followed_id = $1
+	`
+
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*models.User
+
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(
+			&user.ID,
+			&user.Email,
+			&user.UserName,
+			&user.AvatarImg,
+			&user.Profile,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+		if err != nil {
+			log.Println("Error scanning", err)
+			return nil, err
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
