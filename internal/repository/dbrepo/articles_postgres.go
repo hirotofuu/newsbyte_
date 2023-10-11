@@ -213,7 +213,6 @@ func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, err
 		where 
 		    a.id = $1`
 
-
 	var article models.Article
 	row := m.DB.QueryRowContext(ctx, query, id, mainID)
 
@@ -276,8 +275,7 @@ func (m *ArticlePostgresDBRepo) DeleteGoodArticle(articleID, mainID int) error {
 
 	stmt := `delete from article_goods where article_id = $1 and user_id = $2`
 
-
-	_,  err := m.DB.ExecContext(ctx, stmt, articleID, mainID)
+	_, err := m.DB.ExecContext(ctx, stmt, articleID, mainID)
 	if err != nil {
 		return err
 	}

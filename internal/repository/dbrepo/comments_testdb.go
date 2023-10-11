@@ -46,14 +46,14 @@ func (m *TestCDBRepo) OneComment(id, mainID int) (*models.Comment, error) {
 }
 
 func (m *TestCDBRepo) InsertGoodComment(id, mainID int) error {
-	if (id == 1) {
+	if id == 1 {
 		return nil
 	}
 	return errors.New("not found article")
 }
 
 func (m *TestCDBRepo) DeleteGoodComment(commentID, mainID int) error {
-	if (commentID == 1) {
+	if commentID == 1 {
 		return nil
 	}
 	return errors.New("not found article")

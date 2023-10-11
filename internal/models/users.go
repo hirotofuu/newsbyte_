@@ -15,7 +15,7 @@ type User struct {
 	AvatarImg        string    `json:"avatar_img"`
 	Profile          string    `json:"profile"`
 	Password         string    `json:"-"`
-	FollowingUserIDs []*int     `json:"following_user_ids"`
+	FollowingUserIDs []*int    `json:"following_user_ids"`
 	Token            string    `json:"token,omitempty"`
 	RefreshToken     string    `json:"refresh_token,omitempty"`
 	FollowingsCount  int       `json:"followings_count,omitempty"`

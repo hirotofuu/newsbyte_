@@ -69,4 +69,3 @@ func (app *application) errorJSON(w http.ResponseWriter, err error, status ...in
 	return app.writeJSON(w, statusCode, payload)
 
 }
-

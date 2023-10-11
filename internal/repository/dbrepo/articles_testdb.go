@@ -66,14 +66,14 @@ func (m *TestADBRepo) OneArticle(id, mainID int) (*models.Article, error) {
 }
 
 func (m *TestADBRepo) InsertGoodArticle(id, mainID int) error {
-	if (id == 1) {
+	if id == 1 {
 		return nil
 	}
 	return errors.New("not found article")
 }
 
 func (m *TestADBRepo) DeleteGoodArticle(articleID, mainID int) error {
-	if (articleID == 1) {
+	if articleID == 1 {
 		return nil
 	}
 	return errors.New("not found article")

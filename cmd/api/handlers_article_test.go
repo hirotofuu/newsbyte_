@@ -104,7 +104,7 @@ func Test_app_commentHandlers(t *testing.T) {
 		{"userComment", "GET", "", "user_id", "1", app.GetUserComments, http.StatusOK},
 		{"userComment invalid user_id", "GET", "", "user_id", "3", app.GetUserComments, http.StatusBadRequest},
 		{"userComment invalid paramsName", "GET", "", "user_ide", "3", app.GetUserComments, http.StatusBadRequest},
-		
+
 		//fetch article's test
 		{"userComment", "GET", "", "article_id", "1", app.GetArticleComments, http.StatusOK},
 		{"articleComment invalid article_id", "GET", "", "article_id", "2", app.GetArticleComments, http.StatusBadRequest},
