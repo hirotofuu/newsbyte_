@@ -40,14 +40,9 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// create a jwt user
-	u := jwtUser{
-		ID:       user.ID,
-		UserName: user.UserName,
-	}
 
 	// generate tokens
-	tokens, err := app.auth.CreateTokenPair(&u)
+	tokens, err := app.auth.CreateTokenPair(user)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -110,12 +105,9 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := jwtUser{
-		ID:       ID,
-		UserName: user.UserName,
-	}
+	user.ID = ID
 
-	tokens, err := app.auth.CreateTokenPair(&u)
+	tokens, err := app.auth.CreateTokenPair(&user)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -159,13 +151,9 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// create a jwt user
-			u := jwtUser{
-				ID:       user.ID,
-				UserName: user.UserName,
-			}
 
 			// generate tokens
-			tokens, err := app.auth.CreateTokenPair(&u)
+			tokens, err := app.auth.CreateTokenPair(user)
 			if err != nil {
 				app.errorJSON(w, err)
 				return

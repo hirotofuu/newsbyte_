@@ -17,7 +17,7 @@ func (app *application) GetArticleComments(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	comments, err := app.CDB.ArticleComments(articleID, 1)
+	comments, err := app.CDB.ArticleComments(articleID, app.isLogin(w, r))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -34,7 +34,7 @@ func (app *application) GetUserComments(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	comments, err := app.CDB.UserComments(userID, 1)
+	comments, err := app.CDB.UserComments(userID, app.isLogin(w, r))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -97,7 +97,7 @@ func (app *application) InsertGoodComment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.CDB.InsertGoodComment(id, 1)
+	err = app.CDB.InsertGoodComment(id, app.isLogin(w, r))
 	if err != nil {
 		app.errorJSON(w, err)
 	}
@@ -117,7 +117,7 @@ func (app *application) DeleteGoodComment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.CDB.DeleteGoodComment(id, 1)
+	err = app.CDB.DeleteGoodComment(id, app.isLogin(w, r))
 	if err != nil {
 		app.errorJSON(w, err)
 	}

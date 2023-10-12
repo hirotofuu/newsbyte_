@@ -6,11 +6,38 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/hirotofuu/newsbyte/internal/models"
 )
 
 func Test_app_articleHandlers(t *testing.T) {
+	testUser := models.User{
+		ID:              1,
+		UserName:        "hiroto",
+		Email:           "admin@example.com",
+		Password:        "$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK",
+		Profile:         "",
+		AvatarImg:       "http:/s3/s",
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
+		FollowingsCount: 12,
+	}
+
+	tokens, _ := app.auth.CreateTokenPair(&testUser)
+
+	testCookie := &http.Cookie{
+		Name:     "refresh-token",
+		Path:     "/",
+		Value:    tokens.RefreshToken,
+		Expires:  time.Now().Add(app.auth.RefreshExpiry),
+		MaxAge:   int(app.auth.RefreshExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	}
 	var tests = []struct {
 		name           string
 		method         string
@@ -18,25 +45,27 @@ func Test_app_articleHandlers(t *testing.T) {
 		paramName      string
 		paramID        string
 		handler        http.HandlerFunc
+		addCookie      bool
+		Cookie         *http.Cookie
 		expectedStatus int
 	}{
-		{"allArticles", "GET", "", "", "", app.GetAllArticles, http.StatusOK},
+		{"allArticles", "GET", "", "", "", app.GetAllArticles, false, testCookie, http.StatusOK},
 
 		// fetch one test
-		{"oneArticle", "GET", "", "id", "1", app.GetOneArticle, http.StatusOK},
-		{"oneArticle invalid", "GET", "", "id", "100", app.GetOneArticle, http.StatusBadRequest},
-		{"oneArticle bad URL param", "GET", "", "id", "Y", app.GetOneArticle, http.StatusBadRequest},
+		{"oneArticle", "GET", "", "id", "1", app.GetOneArticle, true, testCookie, http.StatusOK},
+		{"oneArticle invalid", "GET", "", "id", "100", app.GetOneArticle, true, testCookie, http.StatusBadRequest},
+		{"oneArticle bad URL param", "GET", "", "id", "Y", app.GetOneArticle, true, testCookie, http.StatusBadRequest},
 
 		// fetch user's test
-		{"userArticle", "GET", "", "user_id", "1", app.GetUserArticles, http.StatusOK},
+		{"userArticle", "GET", "", "user_id", "1", app.GetUserArticles, false, testCookie, http.StatusOK},
 
 		// fetch work test
-		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, http.StatusOK},
+		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, false, testCookie, http.StatusOK},
 
 		// delete test
-		{"deleteArticle", "DELETE", "", "id", "1", app.DeleteArticle, http.StatusOK},
-		{"deleteArticle invalid", "DELETE", "", "id", "9", app.DeleteArticle, http.StatusBadRequest},
-		{"deleteArticle  bad URL param", "DELETE", "", "id", "Y", app.DeleteArticle, http.StatusBadRequest},
+		{"deleteArticle", "DELETE", "", "id", "1", app.DeleteArticle, true, testCookie, http.StatusOK},
+		{"deleteArticle invalid", "DELETE", "", "id", "9", app.DeleteArticle, true, testCookie, http.StatusBadRequest},
+		{"deleteArticle  bad URL param", "DELETE", "", "id", "Y", app.DeleteArticle, true, testCookie, http.StatusBadRequest},
 
 		// insert article test
 		{
@@ -46,6 +75,8 @@ func Test_app_articleHandlers(t *testing.T) {
 			"",
 			"",
 			app.InsertArticle,
+			false,
+			testCookie,
 			http.StatusOK,
 		},
 		{
@@ -55,15 +86,20 @@ func Test_app_articleHandlers(t *testing.T) {
 			"",
 			"",
 			app.InsertArticle,
+			false,
+			testCookie,
 			http.StatusBadRequest,
 		},
 
-		{"insertGoodArticle valid", "PUT", "", "id", "1", app.InsertGoodArticle, http.StatusOK},
-		{"insertGoodArticle invalid params", "PUT", "", "id", "2", app.InsertGoodArticle, http.StatusBadRequest},
-		{"insertGoodArticle invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodArticle, http.StatusBadRequest},
-		{"deleteGoodArticle valid", "PUT", "", "id", "1", app.DeleteGoodArticle, http.StatusOK},
-		{"deleteGoodArticle invalid params", "DELETE", "", "id", "2", app.DeleteGoodArticle, http.StatusBadRequest},
-		{"deleteGoodArticle invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodArticle, http.StatusBadRequest},
+		{"insertGoodArticle valid", "PUT", "", "id", "1", app.InsertGoodArticle, true, testCookie, http.StatusOK},
+		{"insertGoodArticle invalid params", "PUT", "", "id", "2", app.InsertGoodArticle, true, testCookie, http.StatusBadRequest},
+		{"insertGoodArticle invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodArticle, true, testCookie, http.StatusBadRequest},
+		{"insertGoodArticle not cookie", "PUT", "", "id", "2", app.InsertGoodArticle, false, testCookie, http.StatusUnauthorized},
+		
+		{"deleteGoodArticle valid", "PUT", "", "id", "1", app.DeleteGoodArticle, true, testCookie, http.StatusOK},
+		{"deleteGoodArticle invalid params", "DELETE", "", "id", "2", app.DeleteGoodArticle, true, testCookie, http.StatusBadRequest},
+		{"deleteGoodArticle invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodArticle, true, testCookie, http.StatusBadRequest},
+		{"deleteGoodArticle valid", "PUT", "", "id", "1", app.DeleteGoodArticle, false, testCookie, http.StatusUnauthorized},
 	}
 
 	for _, e := range tests {
@@ -72,6 +108,9 @@ func Test_app_articleHandlers(t *testing.T) {
 			req, _ = http.NewRequest(e.method, "/", nil)
 		} else {
 			req, _ = http.NewRequest(e.method, "/", strings.NewReader(e.json))
+		}
+		if e.addCookie {
+			req.AddCookie(e.Cookie)
 		}
 
 		if e.paramName != "" {

@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/hirotofuu/newsbyte/internal/models"
 )
 
 type Auth struct {
@@ -35,7 +37,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (j *Auth) CreateTokenPair(user *jwtUser) (TokenPairs, error) {
+func (j *Auth) CreateTokenPair(user *models.User) (TokenPairs, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["name"] = user.UserName
@@ -137,4 +139,32 @@ func (j *Auth) GetTokenFromHeaderAndVertify(w http.ResponseWriter, r *http.Reque
 
 	return token, claims, nil
 
+}
+
+func (app *application) isLogin(w http.ResponseWriter, r *http.Request) int {
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == app.auth.CookieName {
+			claims := &Claims{}
+			refreshToken := cookie.Value
+
+			_, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(app.JWTSecret), nil
+			})
+			if err != nil {
+				app.errorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+				return 0
+			}
+
+			userId, err := strconv.Atoi(claims.Subject)
+			if err != nil {
+				app.errorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
+				return 0
+			}
+
+			return userId
+
+		}
+	}
+
+	return 0
 }

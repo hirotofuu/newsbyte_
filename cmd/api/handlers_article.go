@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -56,7 +57,7 @@ func (app *application) GetOneArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	article, err := app.ADB.OneArticle(articleID, 1)
+	article, err := app.ADB.OneArticle(articleID, app.isLogin(w, r))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -120,7 +121,13 @@ func (app *application) InsertGoodArticle(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.ADB.InsertGoodArticle(id, 1)
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.ADB.InsertGoodArticle(id, yourID)
 	if err != nil {
 		app.errorJSON(w, err)
 	}
@@ -140,7 +147,13 @@ func (app *application) DeleteGoodArticle(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.ADB.DeleteGoodArticle(id, 1)
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.ADB.DeleteGoodArticle(id, yourID)
 	if err != nil {
 		app.errorJSON(w, err)
 	}
