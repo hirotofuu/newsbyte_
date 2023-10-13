@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -97,7 +98,13 @@ func (app *application) InsertGoodComment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.CDB.InsertGoodComment(id, app.isLogin(w, r))
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.CDB.InsertGoodComment(id, yourID)
 	if err != nil {
 		app.errorJSON(w, err)
 	}
@@ -117,7 +124,13 @@ func (app *application) DeleteGoodComment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.CDB.DeleteGoodComment(id, app.isLogin(w, r))
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.CDB.DeleteGoodComment(id, yourID)
 	if err != nil {
 		app.errorJSON(w, err)
 	}

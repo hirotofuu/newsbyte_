@@ -71,7 +71,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{
 			"insertArticle valid",
 			"PUT",
-			`{"title":"a","content":"it's great.","work":"jujukaisen","medium":1,"comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
+			`{"title":"a","content":"it's great.","tags_in":["Spring","Summer","Fall","Winter"],"medium":1,"comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
 			"",
 			"",
 			app.InsertArticle,
@@ -82,7 +82,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{
 			"insertArticle invalid input",
 			"PUT",
-			`{"title":2,"content":"it's great.","work":"jujukaisen","medium":"1","comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
+			`{"title":2,"content":"it's great.","tags_in":"jujukaisen","medium":"1","comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
 			"",
 			"",
 			app.InsertArticle,
@@ -95,7 +95,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{"insertGoodArticle invalid params", "PUT", "", "id", "2", app.InsertGoodArticle, true, testCookie, http.StatusBadRequest},
 		{"insertGoodArticle invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodArticle, true, testCookie, http.StatusBadRequest},
 		{"insertGoodArticle not cookie", "PUT", "", "id", "2", app.InsertGoodArticle, false, testCookie, http.StatusUnauthorized},
-		
+
 		{"deleteGoodArticle valid", "PUT", "", "id", "1", app.DeleteGoodArticle, true, testCookie, http.StatusOK},
 		{"deleteGoodArticle invalid params", "DELETE", "", "id", "2", app.DeleteGoodArticle, true, testCookie, http.StatusBadRequest},
 		{"deleteGoodArticle invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodArticle, true, testCookie, http.StatusBadRequest},
@@ -130,6 +130,32 @@ func Test_app_articleHandlers(t *testing.T) {
 }
 
 func Test_app_commentHandlers(t *testing.T) {
+	testUser := models.User{
+		ID:              1,
+		UserName:        "hiroto",
+		Email:           "admin@example.com",
+		Password:        "$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK",
+		Profile:         "",
+		AvatarImg:       "http:/s3/s",
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
+		FollowingsCount: 12,
+	}
+
+	tokens, _ := app.auth.CreateTokenPair(&testUser)
+
+	testCookie := &http.Cookie{
+		Name:     "refresh-token",
+		Path:     "/",
+		Value:    tokens.RefreshToken,
+		Expires:  time.Now().Add(app.auth.RefreshExpiry),
+		MaxAge:   int(app.auth.RefreshExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   "localhost",
+		HttpOnly: true,
+		Secure:   true,
+	}
+
 	var tests = []struct {
 		name           string
 		method         string
@@ -137,30 +163,32 @@ func Test_app_commentHandlers(t *testing.T) {
 		paramName      string
 		paramID        string
 		handler        http.HandlerFunc
+		addCookie      bool
+		Cookie         *http.Cookie
 		expectedStatus int
 	}{
 		// fetch user's test
-		{"userComment", "GET", "", "user_id", "1", app.GetUserComments, http.StatusOK},
-		{"userComment invalid user_id", "GET", "", "user_id", "3", app.GetUserComments, http.StatusBadRequest},
-		{"userComment invalid paramsName", "GET", "", "user_ide", "3", app.GetUserComments, http.StatusBadRequest},
+		{"userComment", "GET", "", "user_id", "1", app.GetUserComments, true, testCookie, http.StatusOK},
+		{"userComment invalid user_id", "GET", "", "user_id", "3", app.GetUserComments, true, testCookie, http.StatusBadRequest},
+		{"userComment invalid paramsName", "GET", "", "user_ide", "3", app.GetUserComments, true, testCookie, http.StatusBadRequest},
 
 		//fetch article's test
-		{"userComment", "GET", "", "article_id", "1", app.GetArticleComments, http.StatusOK},
-		{"articleComment invalid article_id", "GET", "", "article_id", "2", app.GetArticleComments, http.StatusBadRequest},
-		{"userComment invalid paramsName", "GET", "", "article_ide", "1", app.GetArticleComments, http.StatusBadRequest},
+		{"userComment", "GET", "", "article_id", "1", app.GetArticleComments, true, testCookie, http.StatusOK},
+		{"articleComment invalid article_id", "GET", "", "article_id", "2", app.GetArticleComments, true, testCookie, http.StatusBadRequest},
+		{"userComment invalid paramsName", "GET", "", "article_ide", "1", app.GetArticleComments, true, testCookie, http.StatusBadRequest},
 
 		// delete comment
-		{"userComment", "DELETE", "", "id", "1", app.DeleteComment, http.StatusOK},
-		{"deleteComment invalid id", "DELETE", "", "id", "2", app.DeleteComment, http.StatusBadRequest},
-		{"deleteComment invalid paramName", "DELETE", "", "ide", "2", app.DeleteComment, http.StatusBadRequest},
+		{"userComment", "DELETE", "", "id", "1", app.DeleteComment, true, testCookie, http.StatusOK},
+		{"deleteComment invalid id", "DELETE", "", "id", "2", app.DeleteComment, true, testCookie, http.StatusBadRequest},
+		{"deleteComment invalid paramName", "DELETE", "", "ide", "2", app.DeleteComment, true, testCookie, http.StatusBadRequest},
 
 		// good
-		{"insertGoodComment valid", "PUT", "", "id", "1", app.InsertGoodComment, http.StatusOK},
-		{"insertGoodComment invalid params", "PUT", "", "id", "2", app.InsertGoodComment, http.StatusBadRequest},
-		{"insertGoodComment invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodComment, http.StatusBadRequest},
-		{"deleteGoodComment valid", "DELETE", "", "id", "1", app.DeleteGoodComment, http.StatusOK},
-		{"deleteGoodComment invalid params", "DELETE", "", "id", "2", app.DeleteGoodComment, http.StatusBadRequest},
-		{"deleteGoodComment invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodComment, http.StatusBadRequest},
+		{"insertGoodComment valid", "PUT", "", "id", "1", app.InsertGoodComment, true, testCookie, http.StatusOK},
+		{"insertGoodComment invalid params", "PUT", "", "id", "2", app.InsertGoodComment, true, testCookie, http.StatusBadRequest},
+		{"insertGoodComment invalid paramsName", "PUT", "", "ide", "2", app.InsertGoodComment, true, testCookie, http.StatusBadRequest},
+		{"deleteGoodComment valid", "DELETE", "", "id", "1", app.DeleteGoodComment, true, testCookie, http.StatusOK},
+		{"deleteGoodComment invalid params", "DELETE", "", "id", "2", app.DeleteGoodComment, true, testCookie, http.StatusBadRequest},
+		{"deleteGoodComment invalid paramsName", "DELETE", "", "ide", "2", app.DeleteGoodComment, true, testCookie, http.StatusBadRequest},
 	}
 
 	for _, e := range tests {
@@ -169,6 +197,10 @@ func Test_app_commentHandlers(t *testing.T) {
 			req, _ = http.NewRequest(e.method, "/", nil)
 		} else {
 			req, _ = http.NewRequest(e.method, "/", strings.NewReader(e.json))
+		}
+
+		if e.addCookie {
+			req.AddCookie(e.Cookie)
 		}
 
 		if e.paramName != "" {

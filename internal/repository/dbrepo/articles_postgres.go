@@ -15,13 +15,13 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `insert into articles (title, content, work, main_img, medium, comment_ok, user_id, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id`
+	stmt := `insert into articles (title, content, tags, main_img, medium, comment_ok, user_id, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id`
 	var newID int
 
 	err := m.DB.QueryRowContext(ctx, stmt,
 		article.Title,
 		article.Content,
-		article.Work,
+		article.TagsIn,
 		article.MainImg,
 		article.Medium,
 		article.CommentOK,
@@ -43,7 +43,7 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
+		a.id, a.title, a.content, a.tags, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
 		u.user_name, u.avatar_img
 	from 
 		articles a
@@ -64,7 +64,7 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 			&article.ID,
 			&article.Title,
 			&article.Content,
-			&article.Work,
+			&article.TagsOut,
 			&article.MainImg,
 			&article.Medium,
 			&article.CommentOK,
@@ -77,7 +77,6 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		articles = append(articles, &article)
 	}
 
@@ -90,7 +89,7 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
+		a.id, a.title, a.content, a.tags, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
 		u.user_name, u.avatar_img
 	from 
 		articles a
@@ -112,7 +111,7 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 			&article.ID,
 			&article.Title,
 			&article.Content,
-			&article.Work,
+			&article.TagsOut,
 			&article.MainImg,
 			&article.Medium,
 			&article.CommentOK,
@@ -138,13 +137,13 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
+		a.id, a.title, a.tags, a.content, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
 		u.user_name, u.avatar_img
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
 		where 
-		    a.work = $1`
+		$1 = ANY(a.tags)`
 
 	rows, err := m.DB.QueryContext(ctx, query, work)
 	if err != nil {
@@ -159,8 +158,8 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 		err := rows.Scan(
 			&article.ID,
 			&article.Title,
+			&article.TagsOut,
 			&article.Content,
-			&article.Work,
 			&article.MainImg,
 			&article.Medium,
 			&article.CommentOK,
@@ -186,7 +185,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, err
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.work, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at, u.user_name, u.avatar_img, coalesce(is_good_flag, 0), coalesce(g.goods_count, 0)
+		a.id, a.title, a.content, a.tags, a.main_img, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at, u.user_name, u.avatar_img, coalesce(is_good_flag, 0), coalesce(g.goods_count, 0)
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -220,7 +219,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, err
 		&article.ID,
 		&article.Title,
 		&article.Content,
-		&article.Work,
+		&article.TagsOut,
 		&article.MainImg,
 		&article.Medium,
 		&article.CommentOK,

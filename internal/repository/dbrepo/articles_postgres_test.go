@@ -145,11 +145,11 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 }
 
 func TestArticlePostgresDBRepoInsert(t *testing.T) {
-
+	tag := "hiroto"
 	testArticle := models.Article{
 		Title:     "you know say",
 		Content:   "tomorrow tomorrow i love yeah tomorrow",
-		Work:      "anney",
+		TagsIn:    []string{tag},
 		MainImg:   "http://main_img",
 		Medium:    1,
 		UserID:    1,
@@ -162,22 +162,15 @@ func TestArticlePostgresDBRepoInsert(t *testing.T) {
 		t.Errorf("insert article reports an error: %s", err)
 	}
 
-	articles, err := testArticleRepo.AllArticles()
-	if err != nil {
-		t.Errorf("all users reports an error: %s", err)
-	}
-
-	if len(articles) != 1 {
-		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
-	}
 }
 
 func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
+	tag := "hiroto"
 
 	testArticle := models.Article{
 		Title:     "you know say",
 		Content:   "tomorrow tomorrow i love yeah tomorrow",
-		Work:      "呪術廻戦",
+		TagsIn:    []string{tag, "呪術廻戦"},
 		MainImg:   "http://main_img",
 		Medium:    1,
 		UserID:    1,
@@ -199,14 +192,32 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
 	}
 
-	articles, err = testArticleRepo.WorkArticles("呪術廻戦")
+	articles, err = testArticleRepo.AllArticles()
 	if err != nil {
 		t.Errorf("all users reports an error: %s", err)
 	}
 
-	if len(articles) != 1 {
+	if len(articles) != 2 {
 		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
 	}
+	article, err := testArticleRepo.OneArticle(2, 1)
+	if err != nil {
+		t.Errorf("all users reports an error: %s", err)
+	}
+	fmt.Println(article.TagsOut)
+
+	if article.Title != "you know say" {
+		t.Errorf("all users reports wrong size; expected 2, but got %s", "Jack")
+	}
+	articles, err = testArticleRepo.WorkArticles("hiroto")
+	if err != nil {
+		t.Errorf("all users reports an error: %s", err)
+	}
+
+	if len(articles) != 2 {
+		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
+	}
+
 }
 
 func TestArticlePostgresDBRepoGetOneArticle(t *testing.T) {

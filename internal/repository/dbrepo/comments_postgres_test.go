@@ -139,7 +139,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 	testArticle := models.Article{
 		Title:     "you know say",
 		Content:   "tomorrow tomorrow i love yeah tomorrow",
-		Work:      "anney",
+		TagsIn:    []string{"釘崎野薔薇", "呪術廻戦"},
 		MainImg:   "http://main_img",
 		Medium:    1,
 		UserID:    1,

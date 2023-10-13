@@ -43,10 +43,14 @@ func (m *TestADBRepo) DeleteArticle(id int) error {
 func (m *TestADBRepo) OneArticle(id, mainID int) (*models.Article, error) {
 	var testArticle models.Article
 
+	tag := "ワンピース"
+	var tags []string
+	tags = append(tags, tag)
+
 	testArticle.ID = id
 	testArticle.Title = "you know say"
 	testArticle.Content = "tomorrow tomorrow i love yeah tomorrow"
-	testArticle.Work = "呪術廻戦"
+	testArticle.TagsIn = tags
 	testArticle.Medium = 1
 	testArticle.UserID = 1
 	testArticle.CommentOK = true
