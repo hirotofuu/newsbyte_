@@ -33,9 +33,14 @@ func (app *application) routes() http.Handler {
 	mux.Get("/work_articles/{work}", app.GetWorkArticles)
 	mux.Get("/articles", app.GetAllArticles)
 
-	mux.Get("user_comments/{user_id}", app.GetUserComments)
-	mux.Get("article_comments/{article_id}", app.GetArticleComments)
+	mux.Get("/user_comments/{user_id}", app.GetUserComments)
+	mux.Get("/article_comments/{article_id}", app.GetArticleComments)
 
+	mux.Get("/following_users/{id}", app.getFollowingUsers)
+	mux.Get("/followed_users/{id}", app.getFollowedUsers)
+	mux.Get("/all_users", app.getAllUsers)
+	mux.Get("/users/{key_word}", app.getSearchUsers)
+	mux.Get("/one_user", app.getOneUser)
 	mux.Post("/login", app.authenticate)
 	mux.Post("/register", app.register)
 	mux.Get("/refresh", app.refreshToken)

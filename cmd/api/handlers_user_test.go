@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Test_app_authenticate(t *testing.T) {
@@ -59,5 +62,46 @@ func Test_app_register(t *testing.T) {
 			t.Errorf("%s: returned wrong status code: expected %d but got %d", e.name, e.expectedStatusCode, rr.Code)
 		}
 
+	}
+}
+
+func Test_app_UserHandlers(t *testing.T) {
+
+	var tests = []struct {
+		name           string
+		method         string
+		json           string
+		paramName      string
+		paramID        string
+		handler        http.HandlerFunc
+		expectedStatus int
+	}{
+		{"valid following", "GET", "", "id", "1", app.getFollowingUsers, http.StatusOK},
+		{"valid followed", "GET", "", "id", "1", app.getFollowingUsers, http.StatusOK},
+		{"valid search users", "GET", "", "key_word", "hiroto", app.getSearchUsers, http.StatusOK},
+		{"valid one user", "GET", "", "id", "1", app.getOneUser, http.StatusOK},
+	}
+
+	for _, e := range tests {
+		var req *http.Request
+		if e.json == "" {
+			req, _ = http.NewRequest(e.method, "/", nil)
+		} else {
+			req, _ = http.NewRequest(e.method, "/", strings.NewReader(e.json))
+		}
+
+		if e.paramName != "" {
+			chiCtx := chi.NewRouteContext()
+			chiCtx.URLParams.Add(e.paramName, e.paramID)
+			req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, chiCtx))
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(e.handler)
+		handler.ServeHTTP(rr, req)
+
+		if rr.Code != e.expectedStatus {
+			t.Errorf("%s: wrong status returned; expected %d but got %d", e.name, e.expectedStatus, rr.Code)
+		}
 	}
 }

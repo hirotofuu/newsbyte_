@@ -15,6 +15,7 @@ type Databaserepo interface {
 	OneUser(id int) (*models.User, error)
 	FollowingUsers(id int) ([]*models.User, error)
 	FollowedUsers(id int) ([]*models.User, error)
+	SearchUsers(keyWord string) ([]*models.User, error)
 }
 
 type ArticleDatabaserepo interface {

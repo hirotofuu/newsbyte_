@@ -60,6 +60,12 @@ func (m *TestDBRepo) AllUsers() ([]*models.User, error) {
 	return users, nil
 }
 
+func (m *TestDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
+	var users []*models.User
+
+	return users, nil
+}
+
 func (m *TestDBRepo) InsertFollow(id, mainID int) error {
 	if id == 1 {
 		return nil
