@@ -38,7 +38,7 @@ func main() {
 	flag.StringVar(&app.APIKey, "api_key", "aed5486efae48ec4cfa93ac93c4afeaf", "api key")
 	flag.Parse()
 
-	app.DSN = "host=localhost port=5432 user=postgres password=postgres dbname=newsbyte sslmode=disable timezone=UTC connect_timeout=5"
+	app.DSN = "host=postgres port=5432 user=postgres password=postgres dbname=newsbyte sslmode=disable timezone=UTC connect_timeout=5"
 
 	conn, err := app.connectToDB()
 	if err != nil {
