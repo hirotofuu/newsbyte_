@@ -21,7 +21,7 @@ func (app *application) GetAllArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) GetUserArticles(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "user_id")
+	id := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(id)
 	if err != nil {
 		app.errorJSON(w, err)
