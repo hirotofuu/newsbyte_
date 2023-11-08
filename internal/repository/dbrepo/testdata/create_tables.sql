@@ -32,6 +32,7 @@ CREATE TABLE public.articles (
   tags text[],
   medium integer,
   comment_ok boolean,
+  is_open_flag boolean,
   created_at timestamp without time zone,
   updated_at timestamp without time zone,
   user_id integer 

@@ -15,7 +15,7 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `insert into articles (title, content, tags, medium, comment_ok, user_id, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id`
+	stmt := `insert into articles (title, content, tags, medium, comment_ok, is_open_flag, user_id, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id`
 	var newID int
 
 	err := m.DB.QueryRowContext(ctx, stmt,
@@ -24,6 +24,7 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 		article.TagsIn,
 		article.Medium,
 		article.CommentOK,
+		article.IsOpenFlag,
 		article.UserID,
 		article.CreatedAt,
 		article.UpdatedAt,
@@ -93,7 +94,9 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 		articles a
 		left join users u on (u.id = a.user_id)
 		where 
-		    a.user_id = $1`
+		    a.user_id = $1 and
+				a.is_open_flag=true
+				`
 
 	rows, err := m.DB.QueryContext(ctx, query, userID)
 	if err != nil {
@@ -140,7 +143,8 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 		articles a
 		left join users u on (u.id = a.user_id)
 		where 
-		$1 = ANY(a.tags)`
+		$1 = ANY(a.tags) and
+		a.is_open_flag=true`
 
 	rows, err := m.DB.QueryContext(ctx, query, work)
 	if err != nil {
@@ -206,7 +210,8 @@ func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, err
       group by article_id)  g 
     on (g.article_id = a.id)
 		where 
-		    a.id = $1`
+		    a.id = $1 and
+				a.is_open_flag=true`
 
 	var article models.Article
 	row := m.DB.QueryRowContext(ctx, query, id, mainID)

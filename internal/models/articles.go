@@ -12,6 +12,7 @@ type Article struct {
 	Medium     int       `json:"medium"`
 	UserID     int       `json:"user_id"`
 	CommentOK  bool      `json:"comment_ok"`
+	IsOpenFlag bool      `json:"is_open_flag"`
 	TagsIn     []string  `json:"tags_in,omitempty""`
 	TagsOut    string    `json:"tagss_out,omitempty""`
 	Name       string    `json:"name,omitempty"`

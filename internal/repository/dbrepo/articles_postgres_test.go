@@ -147,14 +147,15 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 func TestArticlePostgresDBRepoInsert(t *testing.T) {
 	tag := "hiroto"
 	testArticle := models.Article{
-		Title:     "you know say",
-		Content:   "tomorrow tomorrow i love yeah tomorrow",
-		TagsIn:    []string{tag},
-		Medium:    1,
-		UserID:    1,
-		CommentOK: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Title:      "you know say",
+		Content:    "tomorrow tomorrow i love yeah tomorrow",
+		TagsIn:     []string{tag},
+		Medium:     1,
+		UserID:     1,
+		IsOpenFlag: true,
+		CommentOK:  true,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 	_, err := testArticleRepo.InsertArticle(testArticle)
 	if err != nil {
@@ -167,14 +168,15 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 	tag := "hiroto"
 
 	testArticle := models.Article{
-		Title:     "you know say",
-		Content:   "null",
-		TagsIn:    []string{tag, "呪術廻戦"},
-		Medium:    0,
-		UserID:    1,
-		CommentOK: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Title:      "you know say",
+		Content:    "null",
+		TagsIn:     []string{tag, "呪術廻戦"},
+		Medium:     0,
+		UserID:     1,
+		IsOpenFlag: true,
+		CommentOK:  true,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 	_, err := testArticleRepo.InsertArticle(testArticle)
 	if err != nil {
