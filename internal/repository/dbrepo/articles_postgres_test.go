@@ -150,7 +150,6 @@ func TestArticlePostgresDBRepoInsert(t *testing.T) {
 		Title:     "you know say",
 		Content:   "tomorrow tomorrow i love yeah tomorrow",
 		TagsIn:    []string{tag},
-		MainImg:   "http://main_img",
 		Medium:    1,
 		UserID:    1,
 		CommentOK: true,
@@ -169,10 +168,9 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 
 	testArticle := models.Article{
 		Title:     "you know say",
-		Content:   "tomorrow tomorrow i love yeah tomorrow",
+		Content:   "null",
 		TagsIn:    []string{tag, "呪術廻戦"},
-		MainImg:   "http://main_img",
-		Medium:    1,
+		Medium:    0,
 		UserID:    1,
 		CommentOK: true,
 		CreatedAt: time.Now(),

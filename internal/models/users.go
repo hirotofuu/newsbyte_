@@ -17,7 +17,6 @@ type User struct {
 	Password         string    `json:"-"`
 	FollowingUserIDs []*int    `json:"following_user_ids"`
 	Token            string    `json:"token,omitempty"`
-	RefreshToken     string    `json:"refresh_token,omitempty"`
 	FollowingsCount  int       `json:"followings_count,omitempty"`
 	FollowedsCount   int       `json:"followeds_count,omitempty"`
 	CreatedAt        time.Time `json:"-"`

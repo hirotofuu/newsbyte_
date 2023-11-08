@@ -55,7 +55,6 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Token = tokens.Token
-	user.RefreshToken = tokens.RefreshToken
 	user.FollowingUserIDs = folloingIDs
 
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
@@ -115,8 +114,6 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 
 	user.ID = ID
 	user.Token = tokens.Token
-	user.RefreshToken = tokens.RefreshToken
-
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
 
@@ -160,7 +157,6 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 			}
 
 			user.Token = tokens.Token
-			user.RefreshToken = tokens.RefreshToken
 
 			folloingIDs, err := app.DB.GetFollowingUserIDs(user.ID)
 			if err != nil {

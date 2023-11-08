@@ -29,14 +29,15 @@ CREATE TABLE public.articles (
   id integer NOT NULL,
   content text,
   title character varying(512),
-  main_img character varying(512),
-  work character varying(255),
+  tags text[],
   medium integer,
   comment_ok boolean,
   created_at timestamp without time zone,
   updated_at timestamp without time zone,
   user_id integer 
 );
+
+CREATE INDEX articles_tag_idx ON public.articles USING GIN (tags);
 
 
 

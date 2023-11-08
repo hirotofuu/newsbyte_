@@ -29,7 +29,6 @@ CREATE TABLE public.articles (
   id integer NOT NULL,
   content text,
   title character varying(512),
-  main_img character varying(512),
   tags text[],
   medium integer,
   comment_ok boolean,
