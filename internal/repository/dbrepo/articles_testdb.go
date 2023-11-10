@@ -26,6 +26,12 @@ func (m *TestADBRepo) UserArticles(userID int) ([]*models.Article, error) {
 	return articles, nil
 }
 
+func (m *TestADBRepo) UserSaveArticles(userID int) ([]*models.Article, error) {
+	var articles []*models.Article
+
+	return articles, nil
+}
+
 func (m *TestADBRepo) WorkArticles(work string) ([]*models.Article, error) {
 	var articles []*models.Article
 

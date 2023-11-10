@@ -22,6 +22,7 @@ type ArticleDatabaserepo interface {
 	InsertArticle(article models.Article) (int, error)
 	AllArticles() ([]*models.Article, error)
 	UserArticles(userID int) ([]*models.Article, error)
+	UserSaveArticles(userID int) ([]*models.Article, error)
 	WorkArticles(work string) ([]*models.Article, error)
 	OneArticle(id, mainID int) (*models.Article, error)
 	DeleteArticle(id int) error

@@ -131,6 +131,55 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 	return articles, nil
 }
 
+func (m *ArticlePostgresDBRepo) UserSaveArticles(userID int) ([]*models.Article, error) {
+	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
+	defer canceal()
+
+	query := `
+	select 
+		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
+		u.user_name, u.avatar_img
+	from 
+		articles a
+		left join users u on (u.id = a.user_id)
+		where 
+		    a.user_id = $1 and
+				a.is_open_flag=false
+				`
+
+	rows, err := m.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var articles []*models.Article
+
+	for rows.Next() {
+		var article models.Article
+		err := rows.Scan(
+			&article.ID,
+			&article.Title,
+			&article.Content,
+			&article.TagsOut,
+			&article.Medium,
+			&article.CommentOK,
+			&article.UserID,
+			&article.CreatedAt,
+			&article.UpdatedAt,
+			&article.Name,
+			&article.Avatar,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		articles = append(articles, &article)
+	}
+
+	return articles, nil
+}
+
 func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()

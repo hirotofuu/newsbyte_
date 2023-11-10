@@ -37,6 +37,23 @@ func (app *application) GetUserArticles(w http.ResponseWriter, r *http.Request) 
 	_ = app.writeJSON(w, http.StatusOK, articles)
 }
 
+func (app *application) GetUserSaveArticles(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "userID")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	articles, err := app.ADB.UserSaveArticles(userID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, articles)
+}
+
 func (app *application) GetWorkArticles(w http.ResponseWriter, r *http.Request) {
 	work := chi.URLParam(r, "work")
 
