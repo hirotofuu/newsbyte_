@@ -50,6 +50,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/all_users", app.getAllUsers)
 	mux.Get("/users/{key_word}", app.getSearchUsers)
 	mux.Get("/one_user/{id}", app.getOneUser)
+	mux.Get("/one_id_name_user/{id_name}", app.getOneIdNameUser)
 	mux.Post("/login", app.authenticate)
 	mux.Post("/register", app.register)
 	mux.Get("/refresh", app.refreshToken)

@@ -51,13 +51,15 @@ func Test_app_articleHandlers(t *testing.T) {
 	}{
 		{"allArticles", "GET", "", "", "", app.GetAllArticles, false, testCookie, http.StatusOK},
 
+		{"Good State", "GET", "", "id", "1", app.StateGoodArticle, true, testCookie, http.StatusOK},
+
 		// fetch one test
 		{"oneArticle", "GET", "", "id", "1", app.GetOneArticle, true, testCookie, http.StatusOK},
 		{"oneArticle invalid", "GET", "", "id", "100", app.GetOneArticle, true, testCookie, http.StatusBadRequest},
 		{"oneArticle bad URL param", "GET", "", "id", "Y", app.GetOneArticle, true, testCookie, http.StatusBadRequest},
 
 		// fetch user's test
-		{"userArticle", "GET", "", "user_id", "1", app.GetUserArticles, false, testCookie, http.StatusOK},
+		{"userArticle", "GET", "", "userID", "1", app.GetUserArticles, false, testCookie, http.StatusOK},
 
 		// fetch work test
 		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, false, testCookie, http.StatusOK},
@@ -71,7 +73,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{
 			"insertArticle valid",
 			"PUT",
-			`{"title":"a","content":"it's great.","tags_in":["Spring","Summer","Fall","Winter"],"medium":1,"comment_ok":true,"main_img":"http:sss/sss","user_id":1}`,
+			`{"title":"a","content":"it's great.","tags_in":["Spring","Summer","Fall","Winter"],"medium":1,"comment_ok":true,"user_id":1}`,
 			"",
 			"",
 			app.InsertArticle,

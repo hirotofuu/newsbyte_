@@ -16,6 +16,7 @@ type Article struct {
 	TagsIn     []string  `json:"tags_in,omitempty""`
 	TagsOut    string    `json:"tagss_out,omitempty""`
 	Name       string    `json:"name,omitempty"`
+	IdName     string    `json:"id_name,omitempty"`
 	Avatar     string    `json:"avatar,omitempty"`
 	GoodsCount int       `json:"good_count,omitempty"`
 	IsGoodFlag int       `json:"is_good_flag,omitempty"`

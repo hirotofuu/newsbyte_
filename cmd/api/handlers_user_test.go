@@ -44,7 +44,7 @@ func Test_app_register(t *testing.T) {
 		requestBody        string
 		expectedStatusCode int
 	}{
-		{"valid user", `{"user_name":"hiroto","email":"adminexample.com","password":"secret"}`, http.StatusAccepted},
+		{"valid user register", `{"user_name":"hiroto","email":"adminexample.com","password":"secret"}`, http.StatusAccepted},
 		{"valid user", `{"user_name":"hiroto","email":"admin@example.com","password":"secret"}`, http.StatusBadRequest},
 		{"valid user", `{"user_name":"","email":"admin@example.com","password":"secret"}`, http.StatusBadRequest},
 	}

@@ -44,7 +44,7 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 	query := `
 	select 
 		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
-		u.user_name, u.avatar_img
+		u.user_name, u.avatar_img, u.id_name
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -72,6 +72,7 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 			&article.UpdatedAt,
 			&article.Name,
 			&article.Avatar,
+			&article.IdName,
 		)
 		if err != nil {
 			return nil, err
@@ -89,7 +90,7 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 	query := `
 	select 
 		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
-		u.user_name, u.avatar_img
+		u.user_name, u.avatar_img, u.id_name
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -120,6 +121,7 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 			&article.UpdatedAt,
 			&article.Name,
 			&article.Avatar,
+			&article.IdName,
 		)
 		if err != nil {
 			return nil, err
@@ -187,7 +189,7 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 	query := `
 	select 
 		a.id, a.title, a.tags, a.content, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at,
-		u.user_name, u.avatar_img
+		u.user_name, u.avatar_img, u.id_name
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -217,6 +219,7 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 			&article.UpdatedAt,
 			&article.Name,
 			&article.Avatar,
+			&article.IdName,
 		)
 		if err != nil {
 			return nil, err
@@ -228,49 +231,28 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 	return articles, nil
 }
 
-func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, error) {
+func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id,  a.created_at, a.updated_at, u.user_name, u.avatar_img, coalesce(is_good_flag, 0), coalesce(g.goods_count, 0)
+		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.user_name, u.avatar_img, u.id_name
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
-
-		left join
-			(select article_id,
-				(case
-					when u.id = $2 then 1
-					else 0	
-				end) is_good_flag
-			from article_goods n
-			left join
-				users u on (u.id = n.user_id)
-			group by article_id, u.id
-			) m	
-		on (a.id = m.article_id)
-
-    left join
-      (select count(*) as goods_count, article_id
-      from
-       article_goods
-      group by article_id)  g 
-    on (g.article_id = a.id)
 		where 
 		    a.id = $1 and
 				a.is_open_flag=true`
 
 	var article models.Article
-	row := m.DB.QueryRowContext(ctx, query, id, mainID)
+	row := m.DB.QueryRowContext(ctx, query, id)
 
 	err := row.Scan(
 		&article.ID,
 		&article.Title,
 		&article.Content,
 		&article.TagsOut,
-
 		&article.Medium,
 		&article.CommentOK,
 		&article.UserID,
@@ -278,8 +260,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id, mainID int) (*models.Article, err
 		&article.UpdatedAt,
 		&article.Name,
 		&article.Avatar,
-		&article.IsGoodFlag,
-		&article.GoodsCount,
+		&article.IdName,
 	)
 
 	if err != nil {
@@ -315,6 +296,35 @@ func (m *ArticlePostgresDBRepo) InsertGoodArticle(id, mainID int) error {
 	}
 
 	return nil
+
+}
+
+func (m *ArticlePostgresDBRepo) StateGoodArticle(id int) ([]int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select user_id from article_goods where article_id = $1`
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var userIDs []int
+
+	for rows.Next() {
+		var userID int
+		err := rows.Scan(&userID)
+		if err != nil {
+			return nil, err
+		}
+		userIDs = append(userIDs, userID)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return userIDs, nil
 
 }
 

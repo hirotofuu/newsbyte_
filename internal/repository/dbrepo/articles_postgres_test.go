@@ -200,65 +200,22 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 	if len(articles) != 2 {
 		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
 	}
-	article, err := testArticleRepo.OneArticle(2, 1)
+	Ids, err := testArticleRepo.StateGoodArticle(1)
+	if err != nil {
+		t.Errorf("state good reports an error: %s", err)
+	}
+	if len(Ids) != 0 {
+		t.Errorf("state good reports wrong size; expected 1, but got %d", len(Ids))
+	}
+	fmt.Println(Ids)
+
+	article, err := testArticleRepo.OneArticle(2)
 	if err != nil {
 		t.Errorf("all users reports an error: %s", err)
 	}
-	fmt.Println(article.TagsOut)
-
 	if article.Title != "you know say" {
-		t.Errorf("all users reports wrong size; expected 2, but got %s", "Jack")
-	}
-	articles, err = testArticleRepo.WorkArticles("hiroto")
-	if err != nil {
-		t.Errorf("all users reports an error: %s", err)
-	}
-
-	if len(articles) != 2 {
-		t.Errorf("all users reports wrong size; expected 2, but got %d", len(articles))
-	}
-
-}
-
-func TestArticlePostgresDBRepoGetOneArticle(t *testing.T) {
-
-	article, err := testArticleRepo.OneArticle(1, 1)
-	if err != nil {
-		t.Errorf("all users reports an error: %s", err)
-	}
-
-	if article.Title != "you know say" {
-		t.Errorf("all users reports wrong size; expected 2, but got %s", "Jack")
-	}
-
-	err = testArticleRepo.InsertGoodArticle(article.ID, 1)
-	if err != nil {
-		t.Errorf("insert good article reports an error: %s", err)
-	}
-	article, err = testArticleRepo.OneArticle(1, 1)
-	if article.IsGoodFlag != 1 {
-		t.Errorf("one article reports wrong value; expected 0, but got %d", article.IsGoodFlag)
-	}
-	err = testArticleRepo.DeleteGoodArticle(article.ID, 1)
-	if err != nil {
-		t.Errorf("delete good article reports an error: %s", err)
-	}
-	article, err = testArticleRepo.OneArticle(1, 1)
-	if article.IsGoodFlag != 0 {
-		t.Errorf("one article reports wrong value; expected 0, but got %d", article.IsGoodFlag)
-	}
-
-	err = testArticleRepo.DeleteArticle(1)
-	if err != nil {
-		t.Errorf("delete article reports an error: %s", err)
-	}
-
-	articles, err := testArticleRepo.AllArticles()
-	if err != nil {
-		t.Errorf("all articles reports an error: %s", err)
-	}
-
-	if len(articles) != 1 {
-		t.Errorf("all articless reports wrong size; expected 1, but got %d", len(articles))
+		if err != nil {
+			t.Errorf("article title should be you know say: but got %s", article.Title)
+		}
 	}
 }

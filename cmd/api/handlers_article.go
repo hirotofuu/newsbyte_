@@ -74,7 +74,7 @@ func (app *application) GetOneArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	article, err := app.ADB.OneArticle(articleID, app.isLogin(w, r))
+	article, err := app.ADB.OneArticle(articleID)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -178,6 +178,41 @@ func (app *application) DeleteGoodArticle(w http.ResponseWriter, r *http.Request
 	resp := JSONResponse{
 		Error:   false,
 		Message: "delete article good",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) StateGoodArticle(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	Ids, err := app.ADB.StateGoodArticle(id)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	is_flag := false
+
+	for id := range Ids {
+		if id == yourID {
+			is_flag = true
+			break
+		}
+	}
+
+	resp := models.Good{
+		IsGoodFlag: is_flag,
+		GoodNum:    len(Ids),
 	}
 
 	app.writeJSON(w, http.StatusOK, resp)

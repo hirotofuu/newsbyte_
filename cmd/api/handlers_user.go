@@ -87,6 +87,16 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = app.DB.GetUserIdName(requestPayload.UserName)
+	if err != nil && err != sql.ErrNoRows {
+		app.errorJSON(w, err)
+		return
+	}
+	if err == nil {
+		app.errorJSON(w, errors.New("this id_name is already used"), http.StatusBadRequest)
+		return
+	}
+
 	var user models.User
 
 	user.UserName = requestPayload.UserName
@@ -255,6 +265,19 @@ func (app *application) getOneUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := app.DB.OneUser(userID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, user)
+
+}
+
+func (app *application) getOneIdNameUser(w http.ResponseWriter, r *http.Request) {
+	id_name := chi.URLParam(r, "id_name")
+
+	user, err := app.DB.OneIdNameUser(id_name)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

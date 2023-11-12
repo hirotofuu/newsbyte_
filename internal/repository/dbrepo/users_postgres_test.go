@@ -164,6 +164,15 @@ func TestPostgresDBRepoRegisterUsers(t *testing.T) {
 		t.Errorf("expect jack but got %v", user.UserName)
 	}
 
+	user, err = testRepo.GetUserIdName("hiroto")
+	if err != nil {
+		t.Errorf("getuserbyid reports an error: %s", err)
+	}
+
+	if user.UserName != "hiroto" {
+		t.Errorf("expect jack but got %v", user.UserName)
+	}
+
 	err = testRepo.InsertFollow(newID, secondID)
 	if err != nil {
 		t.Errorf("insert good comment reports an error: %s", err)

@@ -3,6 +3,7 @@
 
 CREATE TABLE public.users (
   id integer NOT NULL,
+  id_name character varying(255) unique,
   user_name character varying(255),
   email character varying(255),
   password character varying(255),

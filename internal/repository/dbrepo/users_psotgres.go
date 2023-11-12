@@ -20,7 +20,7 @@ func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, user_name, avatar_img, profile,
+	query := `select id, user_name, id_name, avatar_img, profile,
 	created_at, updated_at
 	from users `
 
@@ -36,8 +36,8 @@ func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 		var user models.User
 		err := rows.Scan(
 			&user.ID,
-			&user.Email,
 			&user.UserName,
+			&user.IdName,
 			&user.AvatarImg,
 			&user.Profile,
 			&user.CreatedAt,
@@ -59,7 +59,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, user_name, password, avatar_img, profile,
+	query := `select id, user_name, id_name, avatar_img, profile,
 			created_at, updated_at from users where email = $1`
 
 	var user models.User
@@ -67,9 +67,35 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 
 	err := row.Scan(
 		&user.ID,
-		&user.Email,
 		&user.UserName,
-		&user.Password,
+		&user.IdName,
+		&user.AvatarImg,
+		&user.Profile,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (m *PostgresDBRepo) GetUserIdName(id_name string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select id, user_name, id_name, avatar_img, profile,
+			created_at, updated_at from users where id_name = $1`
+
+	var user models.User
+	row := m.DB.QueryRowContext(ctx, query, id_name)
+
+	err := row.Scan(
+		&user.ID,
+		&user.UserName,
+		&user.IdName,
 		&user.AvatarImg,
 		&user.Profile,
 		&user.CreatedAt,
@@ -87,7 +113,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, user_name, password, avatar_img, profile,
+	query := `select id, email, user_name, id_name, password, avatar_img, profile,
 			created_at, updated_at from users where id = $1`
 
 	var user models.User
@@ -97,6 +123,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 		&user.ID,
 		&user.Email,
 		&user.UserName,
+		&user.IdName,
 		&user.Password,
 		&user.AvatarImg,
 		&user.Profile,
@@ -120,10 +147,11 @@ func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 		return 0, err
 	}
 
-	stmt := `insert into users (user_name, email, avatar_img, profile, password, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7) returning id`
+	stmt := `insert into users (user_name, id_name, email, avatar_img, profile, password, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id`
 	var newID int
 
 	err = m.DB.QueryRowContext(ctx, stmt,
+		user.UserName,
 		user.UserName,
 		user.Email,
 		user.AvatarImg,
@@ -199,7 +227,7 @@ func (m *PostgresDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, email, user_name, avatar_img, profile,
+	query := `select id, user_name, id_name, avatar_img, profile,
 	created_at, updated_at
 	from users where user_name = $1`
 
@@ -215,8 +243,8 @@ func (m *PostgresDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
 		var user models.User
 		err := rows.Scan(
 			&user.ID,
-			&user.Email,
 			&user.UserName,
+			&user.IdName,
 			&user.AvatarImg,
 			&user.Profile,
 			&user.CreatedAt,
@@ -239,7 +267,7 @@ func (m *PostgresDBRepo) OneUser(id int) (*models.User, error) {
 
 	query := `
 	select
-			u.id, u.email, u.user_name, u.password, u.avatar_img, u.profile,
+			u.id, u.user_name, u.id_name, u.avatar_img, u.profile,
 			u.created_at, u.updated_at, coalesce(ing.followings_count, 0), coalesce(ed.followeds_count, 0)
 	from users u
 	left join
@@ -263,9 +291,55 @@ func (m *PostgresDBRepo) OneUser(id int) (*models.User, error) {
 
 	err := row.Scan(
 		&user.ID,
-		&user.Email,
 		&user.UserName,
-		&user.Password,
+		&user.IdName,
+		&user.AvatarImg,
+		&user.Profile,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.FollowingsCount,
+		&user.FollowedsCount,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (m *PostgresDBRepo) OneIdNameUser(id_name string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+	select
+			u.id, u.user_name, u.id_name, u.avatar_img, u.profile,
+			u.created_at, u.updated_at, coalesce(ing.followings_count, 0), coalesce(ed.followeds_count, 0)
+	from users u
+	left join
+		(select count(*)  followings_count, following_id
+		from
+			follows
+		group by following_id)  ing 
+	on (ing.following_id = u.id)
+
+	left join
+		(select count(*)  followeds_count, followed_id
+		from
+			follows
+		group by followed_id)  ed 
+	on (ed.followed_id = u.id)
+
+	where id_name = $1`
+
+	var user models.User
+	row := m.DB.QueryRowContext(ctx, query, id_name)
+
+	err := row.Scan(
+		&user.ID,
+		&user.UserName,
+		&user.IdName,
 		&user.AvatarImg,
 		&user.Profile,
 		&user.CreatedAt,
@@ -285,7 +359,7 @@ func (m *PostgresDBRepo) FollowingUsers(id int) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select u.id, u.email, u.user_name, u.avatar_img, u.profile,
+	query := `select u.id, u.user_name, u.id_name, u.avatar_img, u.profile,
 	u.created_at, u.updated_at
 	from follows f
 	left join users u on (f.followed_id= u.id)
@@ -304,8 +378,8 @@ func (m *PostgresDBRepo) FollowingUsers(id int) ([]*models.User, error) {
 		var user models.User
 		err := rows.Scan(
 			&user.ID,
-			&user.Email,
 			&user.UserName,
+			&user.IdName,
 			&user.AvatarImg,
 			&user.Profile,
 			&user.CreatedAt,
@@ -326,7 +400,7 @@ func (m *PostgresDBRepo) FollowedUsers(id int) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select u.id, u.email, u.user_name, u.avatar_img, u.profile,
+	query := `select u.id, u.user_name, u.id_name, u.avatar_img, u.profile,
 	u.created_at, u.updated_at
 	from follows f
 	left join users u on (f.following_id= u.id)
@@ -345,8 +419,8 @@ func (m *PostgresDBRepo) FollowedUsers(id int) ([]*models.User, error) {
 		var user models.User
 		err := rows.Scan(
 			&user.ID,
-			&user.Email,
 			&user.UserName,
+			&user.IdName,
 			&user.AvatarImg,
 			&user.Profile,
 			&user.CreatedAt,

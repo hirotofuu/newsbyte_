@@ -46,7 +46,7 @@ func (m *TestADBRepo) DeleteArticle(id int) error {
 	return errors.New("not found article")
 }
 
-func (m *TestADBRepo) OneArticle(id, mainID int) (*models.Article, error) {
+func (m *TestADBRepo) OneArticle(id int) (*models.Article, error) {
 	var testArticle models.Article
 
 	tag := "ワンピース"
@@ -87,4 +87,9 @@ func (m *TestADBRepo) DeleteGoodArticle(articleID, mainID int) error {
 		return nil
 	}
 	return errors.New("not found article")
+}
+
+func (m *TestADBRepo) StateGoodArticle(id int) ([]int, error) {
+	a := []int{}
+	return a, nil
 }

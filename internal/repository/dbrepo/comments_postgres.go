@@ -235,7 +235,6 @@ func (m *CommentPostgresDBRepo) OneComment(id, mainID int) (*models.Comment, err
 	return &comment, nil
 }
 
-
 func (m *CommentPostgresDBRepo) InsertGoodComment(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -258,8 +257,7 @@ func (m *CommentPostgresDBRepo) DeleteGoodComment(commentID, mainID int) error {
 
 	stmt := `delete from comment_goods where comment_id = $1 and user_id = $2`
 
-
-	_,  err := m.DB.ExecContext(ctx, stmt, commentID, mainID)
+	_, err := m.DB.ExecContext(ctx, stmt, commentID, mainID)
 	if err != nil {
 		return err
 	}
