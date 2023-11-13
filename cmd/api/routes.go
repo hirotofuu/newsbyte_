@@ -37,6 +37,7 @@ func (app *application) routes() http.Handler {
 	})
 
 	mux.Get("/article/{id}", app.GetOneArticle)
+	mux.Get("/good_article/{id}", app.StateGoodArticle)
 	mux.Get("/user_articles/{userID}", app.GetUserArticles)
 	mux.Get("/user_save_articles/{userID}", app.GetUserSaveArticles)
 	mux.Get("/work_articles/{work}", app.GetWorkArticles)

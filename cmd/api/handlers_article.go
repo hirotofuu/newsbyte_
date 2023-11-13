@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -191,10 +192,6 @@ func (app *application) StateGoodArticle(w http.ResponseWriter, r *http.Request)
 	}
 
 	yourID := app.isLogin(w, r)
-	if yourID == 0 {
-		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
-		return
-	}
 
 	Ids, err := app.ADB.StateGoodArticle(id)
 	if err != nil {
@@ -203,10 +200,9 @@ func (app *application) StateGoodArticle(w http.ResponseWriter, r *http.Request)
 
 	is_flag := false
 
-	for id := range Ids {
-		if id == yourID {
+	for _, v := range Ids {
+		if v == yourID {
 			is_flag = true
-			break
 		}
 	}
 
@@ -214,6 +210,7 @@ func (app *application) StateGoodArticle(w http.ResponseWriter, r *http.Request)
 		IsGoodFlag: is_flag,
 		GoodNum:    len(Ids),
 	}
+	fmt.Println(resp)
 
 	app.writeJSON(w, http.StatusOK, resp)
 }
