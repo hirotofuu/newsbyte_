@@ -126,7 +126,6 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		UserName:  "Jack",
 		Email:     "jack@smith.com",
 		Password:  "secret",
-		AvatarImg: "http:/clap",
 		Profile:   "",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -140,7 +139,6 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		Title:     "you know say",
 		Content:   "tomorrow tomorrow i love yeah tomorrow",
 		TagsIn:    []string{"釘崎野薔薇", "呪術廻戦"},
-		MainImg:   "http://main_img",
 		Medium:    1,
 		UserID:    1,
 		CommentOK: true,
@@ -169,7 +167,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("insert comment reports wrong id; expected 1, but got %d", commentID)
 	}
 
-	comments, err := testCommentRepo.ArticleComments(articleID, userID)
+	comments, err := testCommentRepo.ArticleComments(articleID)
 	if err != nil {
 		t.Errorf("article comments reports an error: %s", err)
 	}
@@ -215,7 +213,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("delete comment reports an error: %s", err)
 	}
 
-	comments, err = testCommentRepo.ArticleComments(articleID, userID)
+	comments, err = testCommentRepo.ArticleComments(articleID)
 	if err != nil {
 		t.Errorf("article comments reports an error: %s", err)
 	}

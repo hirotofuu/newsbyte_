@@ -20,8 +20,8 @@ type User struct {
 	Token            string    `json:"token,omitempty"`
 	FollowingsCount  int       `json:"followings_count,omitempty"`
 	FollowedsCount   int       `json:"followeds_count,omitempty"`
-	CreatedAt        time.Time `json:"-"`
-	UpdatedAt        time.Time `json:"-"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 // PasswordMatches uses Go's bcrypt package to compare a user supplied password

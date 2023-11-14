@@ -13,7 +13,7 @@ func (m *TestCDBRepo) InsertComment(comment models.Comment) (int, error) {
 	return 1, nil
 }
 
-func (m *TestCDBRepo) ArticleComments(articleID, mainID int) ([]*models.Comment, error) {
+func (m *TestCDBRepo) ArticleComments(articleID int) ([]*models.Comment, error) {
 
 	if articleID == 1 {
 		var comments []*models.Comment

@@ -20,6 +20,6 @@ type Article struct {
 	Avatar     string    `json:"avatar,omitempty"`
 	GoodsCount int       `json:"good_count,omitempty"`
 	IsGoodFlag int       `json:"is_good_flag,omitempty"`
-	CreatedAt  time.Time `json:"-"`
-	UpdatedAt  time.Time `json:"-"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
