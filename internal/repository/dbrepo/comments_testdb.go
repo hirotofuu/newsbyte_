@@ -23,7 +23,7 @@ func (m *TestCDBRepo) ArticleComments(articleID int) ([]*models.Comment, error) 
 	return nil, errors.New("not found article")
 }
 
-func (m *TestCDBRepo) UserComments(userID, mainID int) ([]*models.Comment, error) {
+func (m *TestCDBRepo) UserComments(userID int) ([]*models.Comment, error) {
 
 	if userID == 1 {
 		var comments []*models.Comment

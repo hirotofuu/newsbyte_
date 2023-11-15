@@ -218,4 +218,14 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 			t.Errorf("article title should be you know say: but got %s", article.Title)
 		}
 	}
+	article, err = testArticleRepo.OneEditArticle(2)
+	if err != nil {
+		t.Errorf("all users reports an error: %s", err)
+	}
+	fmt.Println(article)
+	if article.Title != "you know say" {
+		if err != nil {
+			t.Errorf("article title should be you know say: but got %s", article.Title)
+		}
+	}
 }

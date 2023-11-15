@@ -270,6 +270,45 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 	return &article, nil
 }
 
+func (m *ArticlePostgresDBRepo) OneEditArticle(id int) (*models.Article, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+	select 
+		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.user_name, u.avatar_img, u.id_name, a.is_open_flag
+	from 
+		articles a
+		left join users u on (u.id = a.user_id)
+		where 
+		    a.id = $1`
+
+	var article models.Article
+	row := m.DB.QueryRowContext(ctx, query, id)
+
+	err := row.Scan(
+		&article.ID,
+		&article.Title,
+		&article.Content,
+		&article.TagsOut,
+		&article.Medium,
+		&article.CommentOK,
+		&article.UserID,
+		&article.CreatedAt,
+		&article.UpdatedAt,
+		&article.Name,
+		&article.Avatar,
+		&article.IdName,
+		&article.IsOpenFlag,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &article, nil
+}
+
 func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

@@ -320,3 +320,55 @@ func (app *application) getFollowedUsers(w http.ResponseWriter, r *http.Request)
 
 	_ = app.writeJSON(w, http.StatusOK, users)
 }
+
+func (app *application) InsertFollow(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.DB.InsertFollow(id, yourID)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "insert sefety",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) DeleteFollow(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	err = app.DB.DeleteFollow(id, yourID)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "delete sefety",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}

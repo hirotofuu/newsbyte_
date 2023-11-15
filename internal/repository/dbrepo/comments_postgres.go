@@ -77,41 +77,23 @@ func (m *CommentPostgresDBRepo) ArticleComments(articleID int) ([]*models.Commen
 	return comments, nil
 }
 
-func (m *CommentPostgresDBRepo) UserComments(userID, mainID int) ([]*models.Comment, error) {
+func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
 
 	query := `
   select 
     c.id, c.comment, c.user_id, c.article_id, c.created_at, c.updated_at,
-    u.user_name, u.avatar_img, coalesce(is_good_flag, 0), coalesce(g.goods_count, 0)
+    u.user_name, u.avatar_img, a.title
   from 
     comments c
     left join users u on (u.id = c.user_id)
+    left join articles a on (a.id = c.article_id)
 
-		left join
-			(select comment_id,
-				(case
-					when u.id = $2 then 1
-					else 0	
-				end) is_good_flag
-			from comment_goods n
-			left join
-				users u on (u.id = n.user_id)
-			group by comment_id, u.id
-			) m
-		on (c.id = m.comment_id)
-
-    left join
-      (select count(*) as goods_count, comment_id
-      from
-       comment_goods
-      group by comment_id)  g 
-    on (g.comment_id = c.id)
     where 
         c.user_id = $1`
 
-	rows, err := m.DB.QueryContext(ctx, query, userID, mainID)
+	rows, err := m.DB.QueryContext(ctx, query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +112,7 @@ func (m *CommentPostgresDBRepo) UserComments(userID, mainID int) ([]*models.Comm
 			&comment.UpdatedAt,
 			&comment.Name,
 			&comment.Avatar,
-			&comment.IsGoodFlag,
-			&comment.GoodsCount,
+			&comment.ArticleTitle,
 		)
 		if err != nil {
 			return nil, err

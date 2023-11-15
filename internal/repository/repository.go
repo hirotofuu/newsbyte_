@@ -27,6 +27,7 @@ type ArticleDatabaserepo interface {
 	UserSaveArticles(userID int) ([]*models.Article, error)
 	WorkArticles(work string) ([]*models.Article, error)
 	OneArticle(id int) (*models.Article, error)
+	OneEditArticle(id int) (*models.Article, error)
 	DeleteArticle(id int) error
 	InsertGoodArticle(id, mainID int) error
 	DeleteGoodArticle(articleID, mainID int) error
@@ -36,7 +37,7 @@ type ArticleDatabaserepo interface {
 type CommentDatabaserepo interface {
 	InsertComment(comment models.Comment) (int, error)
 	ArticleComments(articleID int) ([]*models.Comment, error)
-	UserComments(userID, mainID int) ([]*models.Comment, error)
+	UserComments(userID int) ([]*models.Comment, error)
 	OneComment(id, mainID int) (*models.Comment, error)
 	DeleteComment(id int) error
 	InsertGoodComment(id, mainID int) error

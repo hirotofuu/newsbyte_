@@ -85,6 +85,24 @@ func (app *application) GetOneArticle(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (app *application) GetEditArticle(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	articleID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	article, err := app.ADB.OneEditArticle(articleID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, article)
+
+}
+
 func (app *application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	var article models.Article
 

@@ -75,6 +75,35 @@ func (m *TestADBRepo) OneArticle(id int) (*models.Article, error) {
 
 }
 
+func (m *TestADBRepo) OneEditArticle(id int) (*models.Article, error) {
+	var testArticle models.Article
+
+	tag := "ワンピース"
+	var tags []string
+	tags = append(tags, tag)
+
+	testArticle.ID = id
+	testArticle.Title = "you know say"
+	testArticle.Content = "tomorrow tomorrow i love yeah tomorrow"
+	testArticle.TagsIn = tags
+	testArticle.Medium = 1
+	testArticle.UserID = 1
+	testArticle.CommentOK = true
+	testArticle.CreatedAt = time.Now()
+	testArticle.UpdatedAt = time.Now()
+	testArticle.Name = "hiroto"
+	testArticle.Avatar = "http://hello"
+	testArticle.IsGoodFlag = 1
+	testArticle.GoodsCount = 0
+
+	if id == 1 {
+		return &testArticle, nil
+	}
+
+	return nil, errors.New("not found article")
+
+}
+
 func (m *TestADBRepo) InsertGoodArticle(id, mainID int) error {
 	if id == 1 {
 		return nil

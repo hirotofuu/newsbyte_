@@ -176,7 +176,7 @@ func TestPostgresDBRepoInsertComment(t *testing.T) {
 		t.Errorf("article comment reports wrong size; expected 1, but got %d", len(comments))
 	}
 
-	comments, err = testCommentRepo.UserComments(userID, userID)
+	comments, err = testCommentRepo.UserComments(userID)
 	if err != nil {
 		t.Errorf("user comments reports an error: %s", err)
 	}
