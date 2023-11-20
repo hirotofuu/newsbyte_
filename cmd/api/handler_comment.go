@@ -53,6 +53,12 @@ func (app *application) InsertComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+	comment.UserID = yourID
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
 

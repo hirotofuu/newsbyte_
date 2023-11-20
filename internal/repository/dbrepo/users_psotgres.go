@@ -59,7 +59,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `select id, user_name, id_name, avatar_img, profile,
+	query := `select id, user_name, id_name, password, avatar_img, profile,
 			created_at, updated_at from users where email = $1`
 
 	var user models.User
@@ -69,6 +69,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 		&user.ID,
 		&user.UserName,
 		&user.IdName,
+		&user.Password,
 		&user.AvatarImg,
 		&user.Profile,
 		&user.CreatedAt,
@@ -165,6 +166,26 @@ func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 	}
 
 	return newID, nil
+}
+
+func (m *PostgresDBRepo) UpdateUser(user models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `update users set user_name = $1, profile = $2, updated_at = $3 where id = $4`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		user.UserName,
+		user.Profile,
+		user.UpdatedAt,
+		user.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (m *PostgresDBRepo) InsertFollow(id, mainID int) error {

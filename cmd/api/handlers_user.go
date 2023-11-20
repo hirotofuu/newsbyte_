@@ -37,7 +37,7 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// check password
 	valid, err := user.PasswordMatches(requestPayload.Password)
 	if err != nil || !valid {
-		app.errorJSON(w, errors.New("credentials"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("credentialsdayo"), http.StatusBadRequest)
 		return
 	}
 
@@ -368,6 +368,31 @@ func (app *application) DeleteFollow(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Error:   false,
 		Message: "delete sefety",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+
+	err := app.readJSON(w, r, &user)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	user.UpdatedAt = time.Now()
+
+	err = app.DB.UpdateUser(user)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "user was updated",
 	}
 
 	app.writeJSON(w, http.StatusOK, resp)

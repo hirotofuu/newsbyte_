@@ -14,6 +14,11 @@ func (m *TestADBRepo) InsertArticle(article models.Article) (int, error) {
 	return 1, nil
 }
 
+func (m *TestADBRepo) UpdateArticle(article models.Article) error {
+
+	return nil
+}
+
 func (m *TestADBRepo) AllArticles() ([]*models.Article, error) {
 	var articles []*models.Article
 

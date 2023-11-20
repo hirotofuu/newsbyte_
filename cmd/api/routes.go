@@ -25,7 +25,10 @@ func (app *application) routes() http.Handler {
 	mux.Route("/user", func(mux chi.Router) {
 		mux.Use(app.authRequired)
 		mux.Put("/insert_article", app.InsertArticle)
+		mux.Put("/update_article", app.UpdateArticle)
 		mux.Delete("/delete_articles/{id}", app.DeleteArticle)
+
+		mux.Put("/update_user", app.UpdateUser)
 
 		mux.Put("/insert_follow/{id}", app.InsertFollow)
 		mux.Delete("/delete_follow/{id}", app.DeleteFollow)
@@ -44,7 +47,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/good_article/{id}", app.StateGoodArticle)
 	mux.Get("/user_articles/{userID}", app.GetUserArticles)
 	mux.Get("/user_save_articles/{userID}", app.GetUserSaveArticles)
-	mux.Get("/work_articles/{work}", app.GetWorkArticles)
+	mux.Get("/search_articles", app.GetWorkArticles)
 	mux.Get("/articles", app.GetAllArticles)
 
 	mux.Get("/user_comments/{user_id}", app.GetUserComments)

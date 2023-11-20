@@ -92,6 +92,11 @@ func (m *TestDBRepo) InsertFollow(id, mainID int) error {
 	return errors.New("not found user")
 }
 
+func (m *TestDBRepo) UpdateUser(user models.User) error {
+
+	return nil
+}
+
 func (m *TestDBRepo) DeleteFollow(id, mainID int) error {
 	if id == 1 {
 		return nil

@@ -230,4 +230,15 @@ func TestPostgresDBRepoGetUsersByEmail(t *testing.T) {
 		t.Errorf("expect jack but got %v", users.UserName)
 	}
 
+	testUpUser := models.User{
+		UserName:  "Jack",
+		Profile:   "",
+		UpdatedAt: time.Now(),
+		ID:        1,
+	}
+	err = testRepo.UpdateUser(testUpUser)
+	if err != nil {
+		t.Errorf("insert user reports an error: %s", err)
+	}
+
 }

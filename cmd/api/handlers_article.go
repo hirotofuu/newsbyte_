@@ -56,9 +56,9 @@ func (app *application) GetUserSaveArticles(w http.ResponseWriter, r *http.Reque
 }
 
 func (app *application) GetWorkArticles(w http.ResponseWriter, r *http.Request) {
-	work := chi.URLParam(r, "work")
+	v := r.URL.Query().Get("q")
 
-	articles, err := app.ADB.WorkArticles(work)
+	articles, err := app.ADB.WorkArticles(v)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -112,10 +112,35 @@ func (app *application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	article.UserID = app.isLogin(w, r)
 	article.CreatedAt = time.Now()
 	article.UpdatedAt = time.Now()
 
 	_, err = app.ADB.InsertArticle(article)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "article is inserted",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+func (app *application) UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	var article models.Article
+
+	err := app.readJSON(w, r, &article)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	article.UpdatedAt = time.Now()
+
+	err = app.ADB.UpdateArticle(article)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

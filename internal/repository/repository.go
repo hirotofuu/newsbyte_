@@ -9,6 +9,7 @@ type Databaserepo interface {
 	GetUserByID(id int) (*models.User, error)
 	GetUserIdName(id_name string) (*models.User, error)
 	InsertUser(user models.User) (int, error)
+	UpdateUser(user models.User) error
 	AllUsers() ([]*models.User, error)
 	InsertFollow(id, mainID int) error
 	DeleteFollow(id, mainID int) error
@@ -22,6 +23,7 @@ type Databaserepo interface {
 
 type ArticleDatabaserepo interface {
 	InsertArticle(article models.Article) (int, error)
+	UpdateArticle(article models.Article) error
 	AllArticles() ([]*models.Article, error)
 	UserArticles(userID int) ([]*models.Article, error)
 	UserSaveArticles(userID int) ([]*models.Article, error)

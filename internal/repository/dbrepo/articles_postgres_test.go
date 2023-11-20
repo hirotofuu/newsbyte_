@@ -228,4 +228,27 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 			t.Errorf("article title should be you know say: but got %s", article.Title)
 		}
 	}
+
+	testUpArticle := models.Article{
+		Title:      "you know say",
+		Content:    "ひぐらしのなく頃に",
+		TagsIn:     []string{"呪術廻戦", "虎杖", "両面"},
+		Medium:     0,
+		IsOpenFlag: true,
+		CommentOK:  true,
+		UpdatedAt:  time.Now(),
+		ID:         2,
+	}
+	err = testArticleRepo.UpdateArticle(testUpArticle)
+	if err != nil {
+		t.Errorf("update article reports an error: %s", err)
+	}
+
+	articles, err = testArticleRepo.WorkArticles("呪術廻戦　  　　虎杖")
+	if err != nil {
+		t.Errorf("all users reports an error: %s", err)
+	}
+	if len(articles) == 0 {
+		t.Errorf("work article should be more than 0: but got %d", len(articles))
+	}
 }

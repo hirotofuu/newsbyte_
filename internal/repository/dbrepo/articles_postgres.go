@@ -3,6 +3,8 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"regexp"
 
 	"github.com/hirotofuu/newsbyte/internal/models"
 )
@@ -34,6 +36,30 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 	}
 
 	return newID, nil
+
+}
+
+func (m *ArticlePostgresDBRepo) UpdateArticle(article models.Article) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `update articles set title = $1, content = $2, tags = $3, medium = $4, comment_ok = $5, is_open_flag = $6, updated_at = $7 where id = $8`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		article.Title,
+		article.Content,
+		article.TagsIn,
+		article.Medium,
+		article.CommentOK,
+		article.IsOpenFlag,
+		article.UpdatedAt,
+		article.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
@@ -194,10 +220,15 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 		articles a
 		left join users u on (u.id = a.user_id)
 		where 
-		$1 = ANY(a.tags) and
 		a.is_open_flag=true`
 
-	rows, err := m.DB.QueryContext(ctx, query, work)
+	reg := `( |　)+`
+	keyArr1 := regexp.MustCompile(reg).Split(work, -1)
+	for _, s := range keyArr1 {
+		query = query + fmt.Sprintf(" and '%s' = ANY(a.tags)", s)
+	}
+
+	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
