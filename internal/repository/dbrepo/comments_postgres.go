@@ -84,7 +84,7 @@ func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, err
 	query := `
   select 
     c.id, c.comment, c.user_id, c.article_id, c.created_at, c.updated_at,
-    u.user_name, u.avatar_img, a.title
+    u.id_name, u.avatar_img, a.title
   from 
     comments c
     left join users u on (u.id = c.user_id)
