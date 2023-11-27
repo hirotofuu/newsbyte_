@@ -192,10 +192,9 @@ func (m *PostgresDBRepo) InsertFollow(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `insert into follows (followed_id, following_id) values ($1, $2) returning id`
-	var newID int
+	stmt := `insert into follows (followed_id, following_id) values ($1, $2)`
 
-	err := m.DB.QueryRowContext(ctx, stmt, id, mainID).Scan(&newID)
+	_, err := m.DB.ExecContext(ctx, stmt, id, mainID)
 	if err != nil {
 		return err
 	}

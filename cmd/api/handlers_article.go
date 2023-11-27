@@ -46,6 +46,17 @@ func (app *application) GetUserSaveArticles(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	yourID := app.isLogin(w, r)
+	if yourID == 0 {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
+	if yourID != userID {
+		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
+		return
+	}
+
 	articles, err := app.ADB.UserSaveArticles(userID)
 	if err != nil {
 		app.errorJSON(w, err)
@@ -169,6 +180,28 @@ func (app *application) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Error:   false,
 		Message: "article deleted",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+
+}
+
+func (app *application) DeleteSomeArticles(w http.ResponseWriter, r *http.Request) {
+	var ids []int
+
+	err := app.readJSON(w, r, &ids)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	err = app.ADB.DeleteSomeArticles(ids)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "articles deleted",
 	}
 
 	app.writeJSON(w, http.StatusOK, resp)

@@ -353,6 +353,28 @@ func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	return nil
 }
 
+func (m *ArticlePostgresDBRepo) DeleteSomeArticles(ids []int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `delete from articles where id in ( `
+	for i, v := range ids {
+		if i == 0 {
+			stmt = stmt + fmt.Sprintf("%d", v)
+		} else {
+			stmt = stmt + fmt.Sprintf(",%d", v)
+		}
+	}
+	stmt = stmt + ")"
+	
+	_, err := m.DB.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *ArticlePostgresDBRepo) InsertGoodArticle(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

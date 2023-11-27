@@ -51,6 +51,20 @@ func (m *TestADBRepo) DeleteArticle(id int) error {
 	return errors.New("not found article")
 }
 
+func (m *TestADBRepo) DeleteSomeArticles(ids []int) error {
+	isFlag := false
+	for v := range ids {
+		if v == 1 || v == 2 {
+			isFlag = true
+		}
+	}
+
+	if isFlag {
+		return nil
+	}
+	return errors.New("not found article")
+}
+
 func (m *TestADBRepo) OneArticle(id int) (*models.Article, error) {
 	var testArticle models.Article
 

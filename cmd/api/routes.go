@@ -27,6 +27,7 @@ func (app *application) routes() http.Handler {
 		mux.Put("/insert_article", app.InsertArticle)
 		mux.Put("/update_article", app.UpdateArticle)
 		mux.Delete("/delete_articles/{id}", app.DeleteArticle)
+		mux.Post("/delete_some_articles", app.DeleteSomeArticles)
 
 		mux.Put("/update_user", app.UpdateUser)
 
@@ -43,9 +44,9 @@ func (app *application) routes() http.Handler {
 	})
 
 	mux.Get("/article/{id}", app.GetOneArticle)
-	mux.Get("/edit_article/{id}", app.GetEditArticle)
 	mux.Get("/good_article/{id}", app.StateGoodArticle)
 	mux.Get("/user_articles/{userID}", app.GetUserArticles)
+	mux.Get("/edit_article/{id}", app.GetEditArticle)
 	mux.Get("/user_save_articles/{userID}", app.GetUserSaveArticles)
 	mux.Get("/search_articles", app.GetWorkArticles)
 	mux.Get("/articles", app.GetAllArticles)

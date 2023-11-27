@@ -248,7 +248,21 @@ func TestArticlePostgresDBRepoGetArticles(t *testing.T) {
 	if err != nil {
 		t.Errorf("all users reports an error: %s", err)
 	}
-	if len(articles) == 0 {
+	if len(articles) != 1 {
 		t.Errorf("work article should be more than 0: but got %d", len(articles))
+	}
+
+	err = testArticleRepo.DeleteSomeArticles([]int{1, 2})
+	if err != nil {
+		t.Errorf("delete some articles reports an error: %s", err)
+	}
+
+	articles, err = testArticleRepo.AllArticles()
+	if err != nil {
+		t.Errorf("all users reports an error: %s", err)
+	}
+
+	if len(articles) != 0 {
+		t.Errorf("all users after delete some reports wrong size; expected 1, but got %d", len(articles))
 	}
 }

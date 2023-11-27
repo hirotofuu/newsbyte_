@@ -31,6 +31,7 @@ type ArticleDatabaserepo interface {
 	OneArticle(id int) (*models.Article, error)
 	OneEditArticle(id int) (*models.Article, error)
 	DeleteArticle(id int) error
+	DeleteSomeArticles(ids []int) error
 	InsertGoodArticle(id, mainID int) error
 	DeleteGoodArticle(articleID, mainID int) error
 	StateGoodArticle(id int) ([]int, error)

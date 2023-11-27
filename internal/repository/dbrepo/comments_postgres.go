@@ -45,7 +45,7 @@ func (m *CommentPostgresDBRepo) ArticleComments(articleID int) ([]*models.Commen
     comments c
     left join users u on (u.id = c.user_id)
 	where 
-			c.article_id = $1`
+			c.article_id = $1 order by id asc`
 
 	rows, err := m.DB.QueryContext(ctx, query, articleID)
 	if err != nil {

@@ -30,14 +30,14 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// validate user against database
 	user, err := app.DB.GetUserByEmail(requestPayload.Email)
 	if err != nil {
-		app.errorJSON(w, errors.New("hello credentials"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("このメールアドレスは登録されていません"), http.StatusBadRequest)
 		return
 	}
 
 	// check password
 	valid, err := user.PasswordMatches(requestPayload.Password)
 	if err != nil || !valid {
-		app.errorJSON(w, errors.New("credentialsdayo"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("パスワードが間違っています"), http.StatusBadRequest)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err == nil {
-		app.errorJSON(w, errors.New("this adress is already used"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("このメールアドレスはすでに使われています"), http.StatusBadRequest)
 		return
 	}
 
@@ -93,7 +93,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err == nil {
-		app.errorJSON(w, errors.New("this id_name is already used"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("このツーザーIDはすでに使われています"), http.StatusBadRequest)
 		return
 	}
 
