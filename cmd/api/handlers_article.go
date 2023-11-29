@@ -39,12 +39,6 @@ func (app *application) GetUserArticles(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) GetUserSaveArticles(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "userID")
-	userID, err := strconv.Atoi(id)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
 
 	yourID := app.isLogin(w, r)
 	if yourID == 0 {
@@ -52,12 +46,7 @@ func (app *application) GetUserSaveArticles(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if yourID != userID {
-		app.errorJSON(w, errors.New("you are not authenticated"), http.StatusUnauthorized)
-		return
-	}
-
-	articles, err := app.ADB.UserSaveArticles(userID)
+	articles, err := app.ADB.UserSaveArticles(yourID)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

@@ -164,3 +164,11 @@ func (m *TestDBRepo) FollowedUsers(id int) ([]*models.User, error) {
 
 	return users, nil
 }
+
+func (m *TestDBRepo) DeleteUser(id int) error {
+	if id == 1 {
+		return nil
+	}
+
+	return sql.ErrNoRows
+}

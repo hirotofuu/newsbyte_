@@ -59,10 +59,10 @@ func Test_app_articleHandlers(t *testing.T) {
 		{"oneArticle bad URL param", "GET", "", "id", "Y", app.GetOneArticle, true, testCookie, http.StatusBadRequest},
 
 		// fetch user's test
-		{"userArticle", "GET", "", "userID", "1", app.GetUserArticles, false, testCookie, http.StatusOK},
+		{"userArticle", "GET", "", "userID", "1", app.GetUserArticles, true, testCookie, http.StatusOK},
 
 		// fetch work test
-		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, false, testCookie, http.StatusOK},
+		{"workArticle", "GET", "", "work", "呪術廻戦", app.GetWorkArticles, true, testCookie, http.StatusOK},
 
 		// delete test
 		{"deleteArticle", "DELETE", "", "id", "1", app.DeleteArticle, true, testCookie, http.StatusOK},

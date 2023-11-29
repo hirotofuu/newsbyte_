@@ -168,6 +168,21 @@ func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 	return newID, nil
 }
 
+func (m *PostgresDBRepo) DeleteUser(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `delete from users where id = $1`
+
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (m *PostgresDBRepo) UpdateUser(user models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

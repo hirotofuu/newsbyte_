@@ -12,6 +12,7 @@ type Databaserepo interface {
 	UpdateUser(user models.User) error
 	AllUsers() ([]*models.User, error)
 	InsertFollow(id, mainID int) error
+	DeleteUser(id int) error
 	DeleteFollow(id, mainID int) error
 	GetFollowingUserIDs(mainID int) ([]*int, error)
 	OneUser(id int) (*models.User, error)

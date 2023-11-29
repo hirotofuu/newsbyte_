@@ -74,6 +74,9 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
+	where
+		a.is_open_flag=true
+	limit 50
 	`
 
 	rows, err := m.DB.QueryContext(ctx, query)
@@ -268,7 +271,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.user_name, u.avatar_img, u.id_name
+		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.user_name, u.profile, u.id_name
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -290,7 +293,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 		&article.CreatedAt,
 		&article.UpdatedAt,
 		&article.Name,
-		&article.Avatar,
+		&article.Profile,
 		&article.IdName,
 	)
 
@@ -307,7 +310,7 @@ func (m *ArticlePostgresDBRepo) OneEditArticle(id int) (*models.Article, error) 
 
 	query := `
 	select 
-		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.user_name, u.avatar_img, u.id_name, a.is_open_flag
+		a.id, a.title, a.content, a.tags, a.medium, a.comment_ok, a.user_id, a.created_at, a.updated_at, u.id_name, a.is_open_flag
 	from 
 		articles a
 		left join users u on (u.id = a.user_id)
@@ -327,8 +330,6 @@ func (m *ArticlePostgresDBRepo) OneEditArticle(id int) (*models.Article, error) 
 		&article.UserID,
 		&article.CreatedAt,
 		&article.UpdatedAt,
-		&article.Name,
-		&article.Avatar,
 		&article.IdName,
 		&article.IsOpenFlag,
 	)
@@ -366,7 +367,7 @@ func (m *ArticlePostgresDBRepo) DeleteSomeArticles(ids []int) error {
 		}
 	}
 	stmt = stmt + ")"
-	
+
 	_, err := m.DB.ExecContext(ctx, stmt)
 	if err != nil {
 		return err

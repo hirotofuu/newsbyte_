@@ -397,3 +397,22 @@ func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, resp)
 }
+
+func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	err = app.DB.DeleteUser(id)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+
+	resp := JSONResponse{
+		Error:   false,
+		Message: "delete user",
+	}
+
+	app.writeJSON(w, http.StatusOK, resp)
+}

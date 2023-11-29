@@ -84,7 +84,7 @@ func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, err
 	query := `
   select 
     c.id, c.comment, c.user_id, c.article_id, c.created_at, c.updated_at,
-    u.id_name, u.avatar_img, a.title
+    u.id_name, a.title, a.user_id
   from 
     comments c
     left join users u on (u.id = c.user_id)
@@ -111,8 +111,8 @@ func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, err
 			&comment.CreatedAt,
 			&comment.UpdatedAt,
 			&comment.Name,
-			&comment.Avatar,
 			&comment.ArticleTitle,
+			&comment.ArticleUserId,
 		)
 		if err != nil {
 			return nil, err
