@@ -185,7 +185,7 @@ func (app *application) DeleteSomeArticles(w http.ResponseWriter, r *http.Reques
 	}
 	err = app.ADB.DeleteSomeArticles(ids)
 	if err != nil {
-		app.errorJSON(w, err)
+		app.errorJSON(w, err, http.StatusAccepted)
 	}
 
 	resp := JSONResponse{

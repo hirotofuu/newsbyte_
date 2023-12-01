@@ -52,9 +52,9 @@ func (m *TestADBRepo) DeleteArticle(id int) error {
 }
 
 func (m *TestADBRepo) DeleteSomeArticles(ids []int) error {
-	isFlag := false
+	isFlag := true
 	for v := range ids {
-		if v == 1 || v == 2 {
+		if v != 1 {
 			isFlag = true
 		}
 	}

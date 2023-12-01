@@ -52,6 +52,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{"allArticles", "GET", "", "", "", app.GetAllArticles, false, testCookie, http.StatusOK},
 
 		{"Good State", "GET", "", "id", "1", app.StateGoodArticle, true, testCookie, http.StatusOK},
+		{"invalid params Good State", "GET", "", "ids", "1", app.StateGoodArticle, true, testCookie, http.StatusBadRequest},
 
 		// fetch one test
 		{"oneArticle", "GET", "", "id", "1", app.GetOneArticle, true, testCookie, http.StatusOK},
@@ -68,6 +69,7 @@ func Test_app_articleHandlers(t *testing.T) {
 		{"deleteArticle", "DELETE", "", "id", "1", app.DeleteArticle, true, testCookie, http.StatusOK},
 		{"deleteArticle invalid", "DELETE", "", "id", "9", app.DeleteArticle, true, testCookie, http.StatusBadRequest},
 		{"deleteArticle  bad URL param", "DELETE", "", "id", "Y", app.DeleteArticle, true, testCookie, http.StatusBadRequest},
+		{"deleteArticle  some articles", "POST", "[1]", "", "", app.DeleteSomeArticles, true, testCookie, http.StatusOK},
 
 		// insert article test
 		{
