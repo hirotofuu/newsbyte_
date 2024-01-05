@@ -100,6 +100,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 
 	user.UserName = requestPayload.UserName
+	user.IdName = requestPayload.UserName
 	user.Email = requestPayload.Email
 	user.Password = requestPayload.Password
 	user.CreatedAt = time.Now()
