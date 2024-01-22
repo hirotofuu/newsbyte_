@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// User describes the data for the User type.
+// 記事のタイプ.
 type Article struct {
 	ID         int       `json:"id"`
 	Content    string    `json:"content"`

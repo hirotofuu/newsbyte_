@@ -12,6 +12,9 @@ import (
 	"github.com/hirotofuu/newsbyte/internal/models"
 )
 
+// 記事、コメントに関するhandlerテスト
+// handler内のデータベースを操作する関数はダミー仕様
+
 func Test_app_articleHandlers(t *testing.T) {
 	testUser := models.User{
 		ID:              1,

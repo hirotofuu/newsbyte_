@@ -11,6 +11,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// ユーザー、認証に関するhandlerテスト
+// handler内のデータベースを操作する関数はダミー仕様
+
 func Test_app_authenticate(t *testing.T) {
 	var theTests = []struct {
 		name               string

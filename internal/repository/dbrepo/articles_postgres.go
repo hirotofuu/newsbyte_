@@ -13,6 +13,7 @@ type ArticlePostgresDBRepo struct {
 	DB *sql.DB
 }
 
+// 記事挿入
 func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -39,6 +40,7 @@ func (m *ArticlePostgresDBRepo) InsertArticle(article models.Article) (int, erro
 
 }
 
+// 記事の編集
 func (m *ArticlePostgresDBRepo) UpdateArticle(article models.Article) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -63,6 +65,7 @@ func (m *ArticlePostgresDBRepo) UpdateArticle(article models.Article) error {
 
 }
 
+// 全ての記事fetch
 func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -112,6 +115,8 @@ func (m *ArticlePostgresDBRepo) AllArticles() ([]*models.Article, error) {
 	return articles, nil
 }
 
+
+// ユーザーごとの記事fetch
 func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -162,6 +167,7 @@ func (m *ArticlePostgresDBRepo) UserArticles(userID int) ([]*models.Article, err
 	return articles, nil
 }
 
+// 下書き記事
 func (m *ArticlePostgresDBRepo) UserSaveArticles(userID int) ([]*models.Article, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -211,6 +217,7 @@ func (m *ArticlePostgresDBRepo) UserSaveArticles(userID int) ([]*models.Article,
 	return articles, nil
 }
 
+// カテゴリーごと
 func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -265,6 +272,7 @@ func (m *ArticlePostgresDBRepo) WorkArticles(work string) ([]*models.Article, er
 	return articles, nil
 }
 
+// 一つに記事fetch
 func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -304,6 +312,7 @@ func (m *ArticlePostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 	return &article, nil
 }
 
+// 編集ようfetch
 func (m *ArticlePostgresDBRepo) OneEditArticle(id int) (*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -341,6 +350,7 @@ func (m *ArticlePostgresDBRepo) OneEditArticle(id int) (*models.Article, error) 
 	return &article, nil
 }
 
+// 記事削除
 func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -354,6 +364,7 @@ func (m *ArticlePostgresDBRepo) DeleteArticle(id int) error {
 	return nil
 }
 
+// 複数削除
 func (m *ArticlePostgresDBRepo) DeleteSomeArticles(ids []int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

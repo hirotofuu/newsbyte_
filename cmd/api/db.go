@@ -9,6 +9,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
+// sqlを開く
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
@@ -23,6 +24,7 @@ func openDB(dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
+// sql接続
 func (app *application) connectToDB() (*sql.DB, error) {
 	connection, err := openDB(app.DSN)
 	if err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/hirotofuu/newsbyte/internal/models"
 )
 
+// 記事ごとのコメントget
 func (app *application) GetArticleComments(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "article_id")
 	articleID, err := strconv.Atoi(id)
@@ -27,6 +28,7 @@ func (app *application) GetArticleComments(w http.ResponseWriter, r *http.Reques
 	_ = app.writeJSON(w, http.StatusOK, comments)
 }
 
+// ユーザーごとのコメントget
 func (app *application) GetUserComments(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "user_id")
 	userID, err := strconv.Atoi(id)
@@ -44,6 +46,7 @@ func (app *application) GetUserComments(w http.ResponseWriter, r *http.Request) 
 	_ = app.writeJSON(w, http.StatusOK, comments)
 }
 
+// コメント作成
 func (app *application) InsertComment(w http.ResponseWriter, r *http.Request) {
 	var comment models.Comment
 
@@ -76,6 +79,7 @@ func (app *application) InsertComment(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, resp)
 }
 
+// コメント削除
 func (app *application) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -97,6 +101,8 @@ func (app *application) DeleteComment(w http.ResponseWriter, r *http.Request) {
 
 }
 
+
+// コメントにいいね作成
 func (app *application) InsertGoodComment(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -123,6 +129,7 @@ func (app *application) InsertGoodComment(w http.ResponseWriter, r *http.Request
 	app.writeJSON(w, http.StatusOK, resp)
 }
 
+// コメントのいいね削除
 func (app *application) DeleteGoodComment(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {

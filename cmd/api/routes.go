@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/cors"
 )
 
+// routing関数 chi router使用
+
 func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 

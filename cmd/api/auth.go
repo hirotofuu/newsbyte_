@@ -37,6 +37,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+// トークン作成
 func (j *Auth) CreateTokenPair(user *models.User) (TokenPairs, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -72,6 +73,8 @@ func (j *Auth) CreateTokenPair(user *models.User) (TokenPairs, error) {
 	return tokenPairs, nil
 }
 
+
+// リフレッシュトークンをクッキーに入れる
 func (j *Auth) GetRefreshCookie(refreshToken string) *http.Cookie {
 	return &http.Cookie{
 		Name:     j.CookieName,
@@ -86,6 +89,7 @@ func (j *Auth) GetRefreshCookie(refreshToken string) *http.Cookie {
 	}
 }
 
+// 期限切れのトークン発行
 func (j *Auth) GetExpiredRefreshCookie() *http.Cookie {
 	return &http.Cookie{
 		Name:     j.CookieName,
@@ -100,6 +104,8 @@ func (j *Auth) GetExpiredRefreshCookie() *http.Cookie {
 	}
 }
 
+
+// トークンがうちで発行されたものか確認
 func (j *Auth) GetTokenFromHeaderAndVertify(w http.ResponseWriter, r *http.Request) (string, *Claims, error) {
 	w.Header().Add("Vary", "Authorization")
 	authHeader := r.Header.Get("Authorization")
@@ -141,6 +147,7 @@ func (j *Auth) GetTokenFromHeaderAndVertify(w http.ResponseWriter, r *http.Reque
 
 }
 
+// トークンから情報摂取
 func (app *application) isLogin(w http.ResponseWriter, r *http.Request) int {
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == app.auth.CookieName {

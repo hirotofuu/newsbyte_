@@ -4,6 +4,7 @@ import (
 	"github.com/hirotofuu/newsbyte/internal/models"
 )
 
+// ユーザーのリポジトリインターファイス
 type Databaserepo interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(id int) (*models.User, error)
@@ -22,6 +23,7 @@ type Databaserepo interface {
 	SearchUsers(keyWord string) ([]*models.User, error)
 }
 
+// 記事のリポジトリインターファイス
 type ArticleDatabaserepo interface {
 	InsertArticle(article models.Article) (int, error)
 	UpdateArticle(article models.Article) error
@@ -38,6 +40,7 @@ type ArticleDatabaserepo interface {
 	StateGoodArticle(id int) ([]int, error)
 }
 
+// コメントのリポジトリインターファイス
 type CommentDatabaserepo interface {
 	InsertComment(comment models.Comment) (int, error)
 	ArticleComments(articleID int) ([]*models.Comment, error)

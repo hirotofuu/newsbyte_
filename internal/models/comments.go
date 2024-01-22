@@ -2,6 +2,8 @@ package models
 
 import "time"
 
+// コメントのタイプ.
+
 type Comment struct {
 	ID            int       `json:"id"`
 	Comment       string    `json:"comment"`

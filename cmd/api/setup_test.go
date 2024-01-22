@@ -8,9 +8,12 @@ import (
 	"github.com/hirotofuu/newsbyte/internal/repository/dbrepo"
 )
 
+// テスト環境
+
 var app application
 
 func TestMain(m *testing.M) {
+	// ダミー関数のリポジトリ
 	app.DB = &dbrepo.TestDBRepo{}
 	app.ADB = &dbrepo.TestADBRepo{}
 	app.CDB = &dbrepo.TestCDBRepo{}

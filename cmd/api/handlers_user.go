@@ -15,7 +15,7 @@ import (
 
 // ログイン
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
-	// read json payload
+	
 	var requestPayload struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -27,14 +27,14 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// validate user against database
+
 	user, err := app.DB.GetUserByEmail(requestPayload.Email)
 	if err != nil {
 		app.errorJSON(w, errors.New("このメールアドレスは登録されていません"), http.StatusBadRequest)
 		return
 	}
 
-	// check password
+
 	valid, err := user.PasswordMatches(requestPayload.Password)
 	if err != nil || !valid {
 		app.errorJSON(w, errors.New("パスワードが間違っています"), http.StatusBadRequest)
@@ -131,6 +131,7 @@ func (app *application) register(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, user)
 }
 
+// トークンをリフレッシュ
 func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == app.auth.CookieName {
@@ -186,6 +187,7 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// リフレッシュトークン作成 without ユーザー情報
 func (app *application) refreshToken_next(w http.ResponseWriter, r *http.Request) {
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == app.auth.CookieName {

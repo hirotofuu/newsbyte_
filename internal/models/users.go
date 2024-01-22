@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// User describes the data for the User type.
+// ユーザーのタイプ
 type User struct {
 	ID               int       `json:"id"`
 	UserName         string    `json:"user_name"`
@@ -24,9 +24,7 @@ type User struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
-// PasswordMatches uses Go's bcrypt package to compare a user supplied password
-// with the hash we have stored for a given user in the database. If the password
-// and hash match, we return true; otherwise, we return false.
+// パスワード照合
 func (u *User) PasswordMatches(plainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
