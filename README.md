@@ -5,9 +5,9 @@
 # 使われている技術
 
 - go
-- ch router
+- chi router
 - go jwt
-- go docker
+- go dockertest
 
 # 特性
 
