@@ -11,6 +11,7 @@ type CommentPostgresDBRepo struct {
 	DB *sql.DB
 }
 
+// コメント
 func (m *CommentPostgresDBRepo) InsertComment(comment models.Comment) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -33,6 +34,7 @@ func (m *CommentPostgresDBRepo) InsertComment(comment models.Comment) (int, erro
 
 }
 
+// 記事ごとのコメント
 func (m *CommentPostgresDBRepo) ArticleComments(articleID int) ([]*models.Comment, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -77,6 +79,7 @@ func (m *CommentPostgresDBRepo) ArticleComments(articleID int) ([]*models.Commen
 	return comments, nil
 }
 
+// ユーザーごとのコメント
 func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, error) {
 	ctx, canceal := context.WithTimeout(context.Background(), dbTimeout)
 	defer canceal()
@@ -124,6 +127,7 @@ func (m *CommentPostgresDBRepo) UserComments(userID int) ([]*models.Comment, err
 	return comments, nil
 }
 
+// コメント削除
 func (m *CommentPostgresDBRepo) DeleteComment(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -137,6 +141,7 @@ func (m *CommentPostgresDBRepo) DeleteComment(id int) error {
 	return nil
 }
 
+// 一つのコメント
 func (m *CommentPostgresDBRepo) OneComment(id, mainID int) (*models.Comment, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -194,6 +199,7 @@ func (m *CommentPostgresDBRepo) OneComment(id, mainID int) (*models.Comment, err
 	return &comment, nil
 }
 
+// コメントいいね
 func (m *CommentPostgresDBRepo) InsertGoodComment(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -210,6 +216,7 @@ func (m *CommentPostgresDBRepo) InsertGoodComment(id, mainID int) error {
 
 }
 
+// コメントいいね削除
 func (m *CommentPostgresDBRepo) DeleteGoodComment(commentID, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

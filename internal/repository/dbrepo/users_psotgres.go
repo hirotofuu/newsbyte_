@@ -16,6 +16,7 @@ type PostgresDBRepo struct {
 	DB *sql.DB
 }
 
+// 全てのユーザーfetch
 func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -54,7 +55,7 @@ func (m *PostgresDBRepo) AllUsers() ([]*models.User, error) {
 	return users, nil
 }
 
-// GetUserByEmail returns one user by email address
+// メールアドレスからユーザーfetch
 func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -83,6 +84,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+// ユーザーidからユーザ情報取得
 func (m *PostgresDBRepo) GetUserIdName(id_name string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -110,6 +112,7 @@ func (m *PostgresDBRepo) GetUserIdName(id_name string) (*models.User, error) {
 	return &user, nil
 }
 
+// idからユーザー情報取得
 func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -139,6 +142,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	return &user, nil
 }
 
+// ユーザー情報挿入
 func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -168,6 +172,7 @@ func (m *PostgresDBRepo) InsertUser(user models.User) (int, error) {
 	return newID, nil
 }
 
+// ユーザー情報削除
 func (m *PostgresDBRepo) DeleteUser(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -183,6 +188,7 @@ func (m *PostgresDBRepo) DeleteUser(id int) error {
 
 }
 
+// ユーザー情報編集
 func (m *PostgresDBRepo) UpdateUser(user models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -203,6 +209,7 @@ func (m *PostgresDBRepo) UpdateUser(user models.User) error {
 
 }
 
+// フォロー
 func (m *PostgresDBRepo) InsertFollow(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -218,6 +225,7 @@ func (m *PostgresDBRepo) InsertFollow(id, mainID int) error {
 
 }
 
+// unフォロー
 func (m *PostgresDBRepo) DeleteFollow(id, mainID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -233,6 +241,7 @@ func (m *PostgresDBRepo) DeleteFollow(id, mainID int) error {
 
 }
 
+// フォローしているid取得
 func (m *PostgresDBRepo) GetFollowingUserIDs(mainID int) ([]*int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -258,6 +267,7 @@ func (m *PostgresDBRepo) GetFollowingUserIDs(mainID int) ([]*int, error) {
 
 }
 
+// ユーザー検索
 func (m *PostgresDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -296,6 +306,7 @@ func (m *PostgresDBRepo) SearchUsers(keyWord string) ([]*models.User, error) {
 	return users, nil
 }
 
+// 一人のユーザー
 func (m *PostgresDBRepo) OneUser(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -343,6 +354,7 @@ func (m *PostgresDBRepo) OneUser(id int) (*models.User, error) {
 	return &user, nil
 }
 
+// 一人のユーザーid
 func (m *PostgresDBRepo) OneIdNameUser(id_name string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -390,6 +402,7 @@ func (m *PostgresDBRepo) OneIdNameUser(id_name string) (*models.User, error) {
 	return &user, nil
 }
 
+// フォローしているユーザー
 func (m *PostgresDBRepo) FollowingUsers(id int) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -431,6 +444,7 @@ func (m *PostgresDBRepo) FollowingUsers(id int) ([]*models.User, error) {
 	return users, nil
 }
 
+// フォロされいているユーザー情報
 func (m *PostgresDBRepo) FollowedUsers(id int) ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

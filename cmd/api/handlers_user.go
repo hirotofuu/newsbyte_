@@ -215,9 +215,7 @@ func (app *application) refreshToken_next(w http.ResponseWriter, r *http.Request
 				return
 			}
 
-			// create a jwt user
 
-			// generate tokens
 			tokens, err := app.auth.CreateTokenPair(user)
 			if err != nil {
 				app.errorJSON(w, err)
